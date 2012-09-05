@@ -11,16 +11,16 @@ require 'mocha'
 
 Fog.mock!
 
-$syncs = []
-RemoteFile.synchronize_stores do |file|
-  $syncs << {:identifier => file.identifier, :missing_stores => file.missing_stores}
-end
-
 MiniTest::Spec.class_eval do
   before do
     Fog::Mock.reset
+
     RemoteFile::STORES.clear
     RemoteFile::STORES_MAP.clear
-    $syncs.clear
+
+    $syncs = []
+    RemoteFile.synchronize_stores do |file|
+      $syncs << {:identifier => file.identifier, :missing_stores => file.missing_stores}
+    end
   end
 end
