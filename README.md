@@ -1,8 +1,8 @@
 # RemoteFile
 
-A library for uploading files to multiple remote storage like Amazon S3 and Rackspace CloudFiles.
+A library for uploading files to multiple remote storage backends like Amazon S3 and Rackspace CloudFiles.
 
-The purpose of the library is to implement a simple interface for uploading to files to multiple backends
+The purpose of the library is to implement a simple interface for uploading files to multiple backends
 and to keep the backends in sync, so that your app will keep working when one backend is down.
 
 ## Installation
@@ -44,7 +44,7 @@ end
 ```
 
 By default RemoteFile will store your files to all stores synchronously. This is probably not what you want,
-so you should tell RemoteFile how to do it asynchronously by:
+so you should tell RemoteFile how to do it asynchronously:
 
 ```ruby
 class RemoteFileSyncJob
@@ -64,14 +64,18 @@ end
 
 ## Usage
 
-Once everything is configured, you can create store files like this:
+Once everything is configured, you can store files like this:
 
 ```ruby
 file = RemoteFile::File.new(unique_file_name, :content => file_content, :content_type => content_type)
 file.store!
 ```
 
+This will store the file on one of the stores and then asynchronously copy the file to the remaining stores.
 `RemoteFile::File#store!` will raise a `RemoteFile::Error` if all storage backends are down.
+
+If you just need to store the file in a single store, the you can use `RemoteFile::File#store_once!`. It will
+behave exactly like `RemoteFile::File#store!`, but will not asynchronously copy the file to the other stores.
 
 ## Contributing
 
