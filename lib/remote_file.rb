@@ -27,7 +27,7 @@ module RemoteFile
     STORES
   end
 
-  def store(identifier)
+  def self.store(store_identifier)
     STORES_MAP[store_identifier]
   end
 
@@ -35,7 +35,17 @@ module RemoteFile
     STORES.first
   end
 
-  def self.synchronize_stores(file)
-    file.synchronize!
+  def self.synchronize_stores(file = nil, &block)
+    if file
+      if @synchronize_stores
+        @synchronize_stores.call(file)
+      else
+        file.synchronize!
+      end
+    elsif block_given?
+      @synchronize_stores = block
+    else
+      raise "invalid call to RemoteFile.synchronize_stores"
+    end
   end
 end

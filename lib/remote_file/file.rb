@@ -22,26 +22,30 @@ module RemoteFile
     end
 
     def store!
+      exception = nil
+
       unless stored?
         RemoteFile.stores.each do |store|
           begin
-            store.store!(self)
+            stored = store.store!(self)
             @stored_in << store.identifier
             break
           rescue ::RemoteFile::Error => e
+            exception = e
           end
         end
       end
 
-      raise $! unless stored?
+      raise exception unless stored?
 
-      RemoteFile.synchronize_stores(file) unless stored_everywhere?
+      RemoteFile.synchronize_stores(self) unless stored_everywhere?
 
       true
     end
 
     def synchronize!
-      missing_stores.each do |store|
+      missing_stores.each do |store_identifier|
+        store = RemoteFile.store(store_identifier)
         store.store!(self)
         @stored_in << store.identifier
       end
