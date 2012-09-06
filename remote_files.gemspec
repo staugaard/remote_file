@@ -22,4 +22,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'minitest'
   gem.add_development_dependency 'debugger'
   gem.add_development_dependency 'mocha'
+  gem.add_development_dependency 'resque'
 end

@@ -5,8 +5,17 @@ module RemoteFiles
     def initialize(identifier, options = {})
       @identifier   = identifier
       @stored_in    = options[:stored_in] || []
-      @content      = options[:content]
+      @content      = options.delete(:content)
       @content_type = options[:content_type]
+      @options      = options
+    end
+
+    def options
+      @options.merge(
+        :identifier   => identifier,
+        :stored_in    => stored_in,
+        :content_type => content_type
+      )
     end
 
     def stored?
