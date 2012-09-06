@@ -4,18 +4,17 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'remote_files/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "remote_files"
+  gem.name          = 'remote_files'
   gem.version       = RemoteFiles::VERSION
-  gem.authors       = ["Mick Staugaard"]
-  gem.email         = ["mick@staugaard.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.authors       = ['Mick Staugaard']
+  gem.email         = ['mick@staugaard.com']
+  gem.description   = 'A library for uploading files to multiple remote storage backends like Amazon S3 and Rackspace CloudFiles.'
+  gem.summary       = 'The purpose of the library is to implement a simple interface for uploading files to multiple backends and to keep the backends in sync, so that your app will keep working when one backend is down.'
+  gem.homepage      = 'https://github.com/staugaard/remote_file'
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
+  gem.files         = Dir.glob('{lib,test}/**/*') + ['README.md']
+  gem.test_files    = gem.files.grep(/test\//)
+  gem.require_paths = ['lib']
 
   gem.add_dependency 'fog'
 
