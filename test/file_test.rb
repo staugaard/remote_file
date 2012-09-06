@@ -43,4 +43,42 @@ describe RemoteFiles::File do
       @file.missing_stores.must_equal([:cf])
     end
   end
+
+  describe '#url' do
+    before do
+      @s3.stubs(:url).returns('s3_url')
+      @cf.stubs(:url).returns('cf_url')
+    end
+
+    describe 'with no arguments' do
+      it 'should return the url on the primary store' do
+        @file.url.must_equal('s3_url')
+      end
+    end
+
+    describe 'with a store identifier' do
+      it 'should return the url from that store' do
+        @file.url(:cf).must_equal('cf_url')
+      end
+    end
+  end
+
+  describe 'current_url' do
+    it 'should return the url from the first store where the file is currently stored' do
+      @s3.stubs(:url).returns('s3_url')
+      @cf.stubs(:url).returns('cf_url')
+
+      @file.stored_in.replace([:s3])
+      @file.current_url.must_equal('s3_url')
+
+      @file.stored_in.replace([:cf])
+      @file.current_url.must_equal('cf_url')
+
+      @file.stored_in.replace([:cf, :s3])
+      @file.current_url.must_equal('s3_url')
+
+      @file.stored_in.replace([])
+      @file.current_url.must_be_nil
+    end
+  end
 end

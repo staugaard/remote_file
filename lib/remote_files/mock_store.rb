@@ -17,5 +17,9 @@ module RemoteFiles
         :stored_in    => [self.identifier]
       )
     end
+
+    def url(identifier)
+      "mock://#{self.identifier}/#{identifier}"
+    end
   end
 end

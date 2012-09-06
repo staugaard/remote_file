@@ -32,6 +32,17 @@ module RemoteFiles
       raise RemoteFiles::Error, $!.message, $!.backtrace
     end
 
+    def url(identifier)
+      case options[:provider]
+      when 'AWS'
+        "https://s3.amazonaws.com/#{options[:directory]}/#{Fog::AWS.escape(identifier)}"
+      when 'Rackspace'
+        "https://storage.cloudfiles.com/#{options[:directory]}/#{Fog::Rackspace.escape(identifier, '/')}"
+      else
+        raise "#{self.class.name}#url was not implemented for the #{options[:provider]} provider"
+      end
+    end
+
     def options
       @options ||= {}
     end
@@ -53,5 +64,6 @@ module RemoteFiles
         :public => options[:public]
       )
     end
+
   end
 end

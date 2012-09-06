@@ -79,4 +79,30 @@ describe RemoteFiles::FogStore do
       proc { @store.retrieve!('identifier') }.must_raise(RemoteFiles::Error)
     end
   end
+
+  describe '#url' do
+    describe 'for S3 connections' do
+      before { @store[:provider] = 'AWS' }
+
+      it 'should return an S3 url' do
+        @store.url('identifier').must_equal('https://s3.amazonaws.com/directory/identifier')
+      end
+    end
+
+    describe 'for CloudFiles connections' do
+      before { @store[:provider] = 'Rackspace' }
+
+      it 'should return a CloudFiles url' do
+        @store.url('identifier').must_equal('https://storage.cloudfiles.com/directory/identifier')
+      end
+    end
+
+    describe 'for other connections' do
+      before { @store[:provider] = 'Google' }
+
+      it 'should raise' do
+        proc { @store.url('identifier') }.must_raise(RuntimeError)
+      end
+    end
+  end
 end

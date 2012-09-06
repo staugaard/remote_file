@@ -21,8 +21,18 @@ module RemoteFiles
       RemoteFiles.stores.map(&:identifier) - @stored_in
     end
 
-    def url
-      
+    def url(store_identifier = nil)
+      store = store_identifier ? RemoteFiles.lookup_store(store_identifier) : RemoteFiles.primary_store
+      return nil unless store
+      store.url(identifier)
+    end
+
+    def current_url
+      prioritized_stores = RemoteFiles.stores.map(&:identifier) & @stored_in
+
+      return nil if prioritized_stores.empty?
+
+      url(prioritized_stores[0])
     end
 
     def store!
