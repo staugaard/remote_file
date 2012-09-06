@@ -1,4 +1,4 @@
-module RemoteFile
+module RemoteFiles
   class AbstractStore
     attr_reader :identifier
 

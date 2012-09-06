@@ -1,4 +1,4 @@
-# RemoteFile
+# RemoteFiles
 
 A library for uploading files to multiple remote storage backends like Amazon S3 and Rackspace CloudFiles.
 
@@ -9,7 +9,7 @@ and to keep the backends in sync, so that your app will keep working when one ba
 
 Add this line to your application's Gemfile:
 
-    gem 'remote_file'
+    gem 'remote_files'
 
 And then execute:
 
@@ -17,14 +17,14 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install remote_file
+    $ gem install remote_files
 
 ## Configuration
 
 First you configure the storage backends you want:
 
 ```ruby
-RemoteFile.add_store(:s3, :primary => true) do |s3|
+RemoteFiles.add_store(:s3, :primary => true) do |s3|
   s3[:provider] = 'AWS'
 
   s3[:aws_access_key_id]     = AWS_ACCESS_KEY_ID
@@ -33,7 +33,7 @@ RemoteFile.add_store(:s3, :primary => true) do |s3|
   s3[:directory] = 'my_s3_bucket'
 end
 
-RemoteFile.add_store(:cf) do |cf|
+RemoteFiles.add_store(:cf) do |cf|
   cf[:provider] = 'Rackspace'
 
   cf[:rackspace_username] = RACKSPACE_USERNAME
@@ -43,13 +43,13 @@ RemoteFile.add_store(:cf) do |cf|
 end
 ```
 
-By default RemoteFile will store your files to all stores synchronously. This is probably not what you want,
-so you should tell RemoteFile how to do it asynchronously:
+By default RemoteFiles will store your files to all stores synchronously. This is probably not what you want,
+so you should tell RemoteFiles how to do it asynchronously:
 
 ```ruby
-class RemoteFileSyncJob
+class RemoteFilesSyncJob
   def initialize(identifier, stored_in)
-    @file = RemoteFile::File.new(identifier, :stored_in => stored_in)
+    @file = RemoteFiles::File.new(identifier, :stored_in => stored_in)
   def
 
   def work
@@ -57,8 +57,8 @@ class RemoteFileSyncJob
   end
 end
 
-RemoteFile.synchronize_stores do |file|
-  MyPreferredJobQueue.enqueue(RemoteFileSyncJob, file.identifier, file.stored_in)
+RemoteFiles.synchronize_stores do |file|
+  MyPreferredJobQueue.enqueue(RemoteFilesSyncJob, file.identifier, file.stored_in)
 end
 ```
 
@@ -67,15 +67,15 @@ end
 Once everything is configured, you can store files like this:
 
 ```ruby
-file = RemoteFile::File.new(unique_file_name, :content => file_content, :content_type => content_type)
+file = RemoteFiles::File.new(unique_file_name, :content => file_content, :content_type => content_type)
 file.store!
 ```
 
 This will store the file on one of the stores and then asynchronously copy the file to the remaining stores.
-`RemoteFile::File#store!` will raise a `RemoteFile::Error` if all storage backends are down.
+`RemoteFiles::File#store!` will raise a `RemoteFiles::Error` if all storage backends are down.
 
-If you just need to store the file in a single store, the you can use `RemoteFile::File#store_once!`. It will
-behave exactly like `RemoteFile::File#store!`, but will not asynchronously copy the file to the other stores.
+If you just need to store the file in a single store, the you can use `RemoteFiles::File#store_once!`. It will
+behave exactly like `RemoteFiles::File#store!`, but will not asynchronously copy the file to the other stores.
 
 ## Contributing
 

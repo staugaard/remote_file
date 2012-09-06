@@ -1,8 +1,8 @@
-require 'remote_file/version'
-require 'remote_file/fog_store'
-require 'remote_file/file'
+require 'remote_files/version'
+require 'remote_files/fog_store'
+require 'remote_files/file'
 
-module RemoteFile
+module RemoteFiles
   class Error < StandardError; end
   class NotFoundError < Error; end
 
@@ -23,7 +23,7 @@ module RemoteFile
   end
 
   def self.stores
-    raise "You need to configure add stores to RemoteFile using 'RemoteFile.add_store'" if STORES.empty?
+    raise "You need to configure add stores to RemoteFiles using 'RemoteFiles.add_store'" if STORES.empty?
     STORES
   end
 
@@ -45,7 +45,7 @@ module RemoteFile
         stored = store.store!(file)
         file.stored_in << store.identifier
         break
-      rescue ::RemoteFile::Error => e
+      rescue ::RemoteFiles::Error => e
         exception = e
       end
     end
@@ -81,7 +81,7 @@ module RemoteFile
     elsif block_given?
       @synchronize_stores = block
     else
-      raise "invalid call to RemoteFile.synchronize_stores"
+      raise "invalid call to RemoteFiles.synchronize_stores"
     end
   end
 end

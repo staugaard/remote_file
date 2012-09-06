@@ -1,4 +1,4 @@
-module RemoteFile
+module RemoteFiles
   class MockStore < AbstractStore
     def data
       @data ||= {}

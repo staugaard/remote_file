@@ -1,59 +1,59 @@
 require_relative 'test_helper'
-require 'remote_file/mock_store'
+require 'remote_files/mock_store'
 
-describe RemoteFile do
+describe RemoteFiles do
   before do
-    @file = RemoteFile::File.new('file', :content => 'content', :content_type => 'text/plain')
-    @mock_store1 = RemoteFile.add_store(:mock1, :class => RemoteFile::MockStore)
-    @mock_store2 = RemoteFile.add_store(:mock2, :class => RemoteFile::MockStore)
+    @file = RemoteFiles::File.new('file', :content => 'content', :content_type => 'text/plain')
+    @mock_store1 = RemoteFiles.add_store(:mock1, :class => RemoteFiles::MockStore)
+    @mock_store2 = RemoteFiles.add_store(:mock2, :class => RemoteFiles::MockStore)
   end
 
   describe '::add_store' do
     describe 'when adding a non-primary store' do
-      before { @non_primary_store = RemoteFile.add_store(:primary) }
+      before { @non_primary_store = RemoteFiles.add_store(:primary) }
 
       it 'should add it to the tail of the list of stores' do
-        RemoteFile.stores.must_equal([@mock_store1, @mock_store2, @non_primary_store])
+        RemoteFiles.stores.must_equal([@mock_store1, @mock_store2, @non_primary_store])
       end
     end
 
     describe 'when adding a promary store' do
-      before { @primary_store = RemoteFile.add_store(:primary, :primary => true) }
+      before { @primary_store = RemoteFiles.add_store(:primary, :primary => true) }
 
       it 'should add it to the head of the list of stores' do
-        RemoteFile.stores.must_equal([@primary_store, @mock_store1, @mock_store2])
+        RemoteFiles.stores.must_equal([@primary_store, @mock_store1, @mock_store2])
       end
     end
   end
 
   describe '::primary_store' do
     before do
-      @primary_store1 = RemoteFile.add_store(:primary1, :primary => true)
-      @primary_store2 = RemoteFile.add_store(:primary2, :primary => true)
+      @primary_store1 = RemoteFiles.add_store(:primary1, :primary => true)
+      @primary_store2 = RemoteFiles.add_store(:primary2, :primary => true)
     end
 
     it 'should return the head of the list of stores' do
-      RemoteFile.primary_store.must_equal(@primary_store2)
+      RemoteFiles.primary_store.must_equal(@primary_store2)
     end
   end
 
   describe '::lookup_store' do
     before do
-      @primary_store = RemoteFile.add_store(:primary, :primary => true)
+      @primary_store = RemoteFiles.add_store(:primary, :primary => true)
     end
 
     it 'should find the store my identifier' do
-      RemoteFile.lookup_store(:mock1).must_equal(@mock_store1)
-      RemoteFile.lookup_store(:mock2).must_equal(@mock_store2)
-      RemoteFile.lookup_store(:primary).must_equal(@primary_store)
-      RemoteFile.lookup_store(:unknown).must_be_nil
+      RemoteFiles.lookup_store(:mock1).must_equal(@mock_store1)
+      RemoteFiles.lookup_store(:mock2).must_equal(@mock_store2)
+      RemoteFiles.lookup_store(:primary).must_equal(@primary_store)
+      RemoteFiles.lookup_store(:unknown).must_be_nil
     end
   end
 
   describe '::store_once!' do
 
     describe 'when the first store succeeds' do
-      before { RemoteFile.store_once!(@file) }
+      before { RemoteFiles.store_once!(@file) }
 
       it 'should only store the file in the first store' do
         @mock_store1.data['file'].must_equal(:content => 'content', :content_type => 'text/plain')
@@ -63,8 +63,8 @@ describe RemoteFile do
 
     describe 'when the first store fails' do
       before do
-        @mock_store1.expects(:store!).with(@file).raises(RemoteFile::Error)
-        RemoteFile.store_once!(@file)
+        @mock_store1.expects(:store!).with(@file).raises(RemoteFiles::Error)
+        RemoteFiles.store_once!(@file)
       end
 
       it 'should only store the file in the second store' do
@@ -75,12 +75,12 @@ describe RemoteFile do
 
     describe 'when alls stores fail' do
       before do
-        @mock_store1.expects(:store!).with(@file).raises(RemoteFile::Error)
-        @mock_store2.expects(:store!).with(@file).raises(RemoteFile::Error)
+        @mock_store1.expects(:store!).with(@file).raises(RemoteFiles::Error)
+        @mock_store2.expects(:store!).with(@file).raises(RemoteFiles::Error)
       end
 
-      it 'should raise a RemoteFile::Error' do
-        proc { RemoteFile.store_once!(@file) }.must_raise(RemoteFile::Error)
+      it 'should raise a RemoteFiles::Error' do
+        proc { RemoteFiles.store_once!(@file) }.must_raise(RemoteFiles::Error)
       end
     end
   end
@@ -89,14 +89,14 @@ describe RemoteFile do
     before do
       @files = []
 
-      RemoteFile.synchronize_stores do |file|
+      RemoteFiles.synchronize_stores do |file|
         @files << file
       end
     end
 
     it 'should use the block for store synchronizaation' do
-      file = RemoteFile::File.new('file')
-      RemoteFile.synchronize_stores(file)
+      file = RemoteFiles::File.new('file')
+      RemoteFiles.synchronize_stores(file)
       @files.must_equal([file])
     end
   end
@@ -106,13 +106,13 @@ describe RemoteFile do
       before { @file.stored_in.replace([@mock_store1.identifier]) }
 
       it 'should not store the file' do
-        RemoteFile.expects(:store_once!).never
-        RemoteFile.store!(@file)
+        RemoteFiles.expects(:store_once!).never
+        RemoteFiles.store!(@file)
       end
 
       it 'should synchronize the stores' do
-        RemoteFile.expects(:synchronize_stores).with(@file)
-        RemoteFile.store!(@file)
+        RemoteFiles.expects(:synchronize_stores).with(@file)
+        RemoteFiles.store!(@file)
       end
     end
 
@@ -120,13 +120,13 @@ describe RemoteFile do
       before { @file.stored_in.replace([@mock_store1.identifier, @mock_store2.identifier]) }
 
       it 'should not store the file' do
-        RemoteFile.expects(:store_once!).never
-        RemoteFile.store!(@file)
+        RemoteFiles.expects(:store_once!).never
+        RemoteFiles.store!(@file)
       end
 
       it 'should not synchronize the stores' do
-        RemoteFile.expects(:synchronize_stores).never
-        RemoteFile.store!(@file)
+        RemoteFiles.expects(:synchronize_stores).never
+        RemoteFiles.store!(@file)
       end
 
     end
@@ -135,13 +135,13 @@ describe RemoteFile do
       before { @file.stored_in.replace([]) }
 
       it 'should store the file once' do
-        RemoteFile.expects(:store_once!).with(@file)
-        RemoteFile.store!(@file)
+        RemoteFiles.expects(:store_once!).with(@file)
+        RemoteFiles.store!(@file)
       end
 
       it 'should synchronize the stores' do
-        RemoteFile.expects(:synchronize_stores).with(@file)
-        RemoteFile.store!(@file)
+        RemoteFiles.expects(:synchronize_stores).with(@file)
+        RemoteFiles.store!(@file)
       end
     end
   end
@@ -154,7 +154,7 @@ describe RemoteFile do
         @mock_store1.expects(:store!).returns(true)
         @mock_store2.expects(:store!).returns(true)
 
-        RemoteFile.synchronize!(@file)
+        RemoteFiles.synchronize!(@file)
       end
     end
 
@@ -165,7 +165,7 @@ describe RemoteFile do
         @mock_store1.expects(:store!).never
         @mock_store2.expects(:store!).with(@file).returns(true)
 
-        RemoteFile.synchronize!(@file)
+        RemoteFiles.synchronize!(@file)
       end
     end
 
@@ -176,7 +176,7 @@ describe RemoteFile do
         @mock_store1.expects(:store!).never
         @mock_store2.expects(:store!).never
 
-        RemoteFile.synchronize!(@file)
+        RemoteFiles.synchronize!(@file)
       end
     end
   end

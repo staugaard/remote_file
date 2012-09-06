@@ -1,6 +1,6 @@
 require_relative 'test_helper'
 
-describe RemoteFile::FogStore do
+describe RemoteFiles::FogStore do
   before do
     @connection = Fog::Storage.new({
       :provider              => 'AWS',
@@ -10,7 +10,7 @@ describe RemoteFile::FogStore do
 
     @directory = @connection.directories.create(:key => 'directory')
 
-    @store = RemoteFile::FogStore.new(:fog)
+    @store = RemoteFiles::FogStore.new(:fog)
     @store[:provider] = 'AWS'
     @store[:aws_access_key_id]     = 'access_key_id'
     @store[:aws_secret_access_key] = 'secret_access_key'
@@ -36,7 +36,7 @@ describe RemoteFile::FogStore do
 
   describe '#store!' do
     before do
-      @file = RemoteFile::File.new('identifier', :content_type => 'text/plain', :content => 'content')
+      @file = RemoteFiles::File.new('identifier', :content_type => 'text/plain', :content => 'content')
     end
 
     it 'should store the file in the directory' do
@@ -49,14 +49,14 @@ describe RemoteFile::FogStore do
       fog_file.body.must_equal('content')
     end
 
-    it 'should raise a RemoteFile::Error when an error happens' do
+    it 'should raise a RemoteFiles::Error when an error happens' do
       @directory.destroy
-      proc { @store.store!(@file) }.must_raise(RemoteFile::Error)
+      proc { @store.store!(@file) }.must_raise(RemoteFiles::Error)
     end
   end
 
   describe '#retrieve!' do
-    it 'should return a RemoteFile::File when found' do
+    it 'should return a RemoteFiles::File when found' do
       @directory.files.create(
         :body         => 'content',
         :content_type => 'text/plain',
@@ -65,18 +65,18 @@ describe RemoteFile::FogStore do
 
       file = @store.retrieve!('identifier')
 
-      file.must_be_instance_of(RemoteFile::File)
+      file.must_be_instance_of(RemoteFiles::File)
       file.content.must_equal('content')
       file.content_type.must_equal('text/plain')
     end
 
-    it 'should raise a RemoteFile::NotFoundError when not found' do
-      proc { @store.retrieve!('identifier') }.must_raise(RemoteFile::NotFoundError)
+    it 'should raise a RemoteFiles::NotFoundError when not found' do
+      proc { @store.retrieve!('identifier') }.must_raise(RemoteFiles::NotFoundError)
     end
 
-    it 'should raise a RemoteFile::Error when error' do
+    it 'should raise a RemoteFiles::Error when error' do
       @directory.destroy
-      proc { @store.retrieve!('identifier') }.must_raise(RemoteFile::Error)
+      proc { @store.retrieve!('identifier') }.must_raise(RemoteFiles::Error)
     end
   end
 end

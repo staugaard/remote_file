@@ -1,7 +1,7 @@
-require 'remote_file/abstract_store'
+require 'remote_files/abstract_store'
 require 'fog'
 
-module RemoteFile
+module RemoteFiles
   class FogStore < AbstractStore
     def store!(file)
       sucess = directory.files.create(
@@ -11,11 +11,11 @@ module RemoteFile
         :public       => options[:public]
       )
 
-      raise RemoteFile::Error unless sucess
+      raise RemoteFiles::Error unless sucess
 
       true
     rescue Fog::Errors::Error, Excon::Errors::Error
-      raise RemoteFile::Error, $!.message, $!.backtrace
+      raise RemoteFiles::Error, $!.message, $!.backtrace
     end
 
     def retrieve!(identifier)
@@ -29,7 +29,7 @@ module RemoteFile
         :stored_in    => [self.identifier]
       )
     rescue Fog::Errors::Error, Excon::Errors::Error
-      raise RemoteFile::Error, $!.message, $!.backtrace
+      raise RemoteFiles::Error, $!.message, $!.backtrace
     end
 
     def options

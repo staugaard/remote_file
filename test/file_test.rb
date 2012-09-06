@@ -1,11 +1,11 @@
 require_relative 'test_helper'
 
-describe RemoteFile::File do
+describe RemoteFiles::File do
   before do
-    @s3 = RemoteFile.add_store(:s3, :class => RemoteFile::MockStore, :primary => true)
-    @cf = RemoteFile.add_store(:cf, :class => RemoteFile::MockStore)
+    @s3 = RemoteFiles.add_store(:s3, :class => RemoteFiles::MockStore, :primary => true)
+    @cf = RemoteFiles.add_store(:cf, :class => RemoteFiles::MockStore)
 
-    @file = RemoteFile::File.new('identifier')
+    @file = RemoteFiles::File.new('identifier')
   end
 
   describe '#stored?' do

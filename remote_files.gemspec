@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'remote_file/version'
+require 'remote_files/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "remote_file"
-  gem.version       = RemoteFile::VERSION
+  gem.name          = "remote_files"
+  gem.version       = RemoteFiles::VERSION
   gem.authors       = ["Mick Staugaard"]
   gem.email         = ["mick@staugaard.com"]
   gem.description   = %q{TODO: Write a gem description}

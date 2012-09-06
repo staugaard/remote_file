@@ -1,4 +1,4 @@
-module RemoteFile
+module RemoteFiles
   class File
     attr_reader :content, :content_type, :identifier, :stored_in
 
@@ -18,19 +18,23 @@ module RemoteFile
     end
 
     def missing_stores
-      RemoteFile.stores.map(&:identifier) - @stored_in
+      RemoteFiles.stores.map(&:identifier) - @stored_in
+    end
+
+    def url
+      
     end
 
     def store!
-      RemoteFile.store!(self)
+      RemoteFiles.store!(self)
     end
 
     def store_once!
-      RemoteFile.store_once!(self)
+      RemoteFiles.store_once!(self)
     end
 
     def synchronize!
-      RemoteFile.synchronize!(self)
+      RemoteFiles.synchronize!(self)
     end
   end
 end
