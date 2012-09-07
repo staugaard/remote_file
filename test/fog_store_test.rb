@@ -105,4 +105,65 @@ describe RemoteFiles::FogStore do
       end
     end
   end
+
+  describe '#file_from_url' do
+    describe 'for an S3 store' do
+      before { @store[:provider] = 'AWS' }
+
+      it 'should create a file if the bucket matches' do
+        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/s3.txt')
+        assert file
+        assert_equal 'key/on/s3.txt', file.identifier
+
+        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/other_bucket/key/on/s3.txt')
+        assert !file
+
+        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/s3.txt')
+        assert !file
+      end
+    end
+
+    describe 'for a cloudfiles store' do
+      before { @store[:provider] = 'Rackspace' }
+
+      it 'should create a file if the container matches' do
+        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/s3.txt')
+        assert file
+        assert_equal 'key/on/s3.txt', file.identifier
+
+        file = @store.file_from_url('http://storage.cloudfiles.com/other_container/key/on/s3.txt')
+        assert !file
+
+        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/s3.txt')
+        assert !file
+      end
+    end
+
+    describe 'for other stores' do
+      before { @store[:provider] = 'Google' }
+
+      it 'should raise a RuntimeError' do
+        proc { @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/s3.txt') }.must_raise(RuntimeError)
+      end
+    end
+  end
+
+  describe '#delete!' do
+    before do
+      @store.directory.files.create(
+        :body         => 'content',
+        :content_type => 'text/plain',
+        :key          => 'identifier',
+      )
+    end
+
+    it 'should destroy the file' do
+      assert @store.directory.files.get('identifier')
+
+      @store.delete!('identifier')
+
+      assert !@store.directory.files.get('identifier')
+    end
+  end
+
 end

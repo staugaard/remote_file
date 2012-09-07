@@ -43,12 +43,19 @@ module RemoteFiles
       end
     end
 
-    def options
-      @options ||= {}
+    def url_matcher
+      @url_matcher ||= case options[:provider]
+      when 'AWS'
+        /https?:\/\/s3[^\.]*.amazonaws.com\/#{options[:directory]}\/(.*)/
+      when 'Rackspace'
+        /https?:\/\/storage.cloudfiles.com\/#{options[:directory]}\/(.*)/
+      else
+        raise "#{self.class.name}#url_matcher was not implemented for the #{options[:provider]} provider"
+      end
     end
 
-    def []=(name, value)
-      options[name] = value
+    def delete!(identifier)
+      connection.delete_object(directory.key, identifier)
     end
 
     def connection

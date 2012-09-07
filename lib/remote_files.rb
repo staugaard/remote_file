@@ -63,6 +63,13 @@ module RemoteFiles
     true
   end
 
+  def self.delete!(file)
+    file.stored_in.each do |store_identifier|
+      store = lookup_store(store_identifier)
+      store.delete!(file.identifier)
+    end
+  end
+
   def self.synchronize!(file)
     file.missing_stores.each do |store_identifier|
       store = lookup_store(store_identifier)

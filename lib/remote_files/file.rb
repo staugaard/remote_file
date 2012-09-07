@@ -10,6 +10,13 @@ module RemoteFiles
       @options      = options
     end
 
+    def self.from_url(url)
+      RemoteFiles.stores.each do |store|
+        file = store.file_from_url(url)
+        return file if file
+      end
+    end
+
     def options
       @options.merge(
         :identifier   => identifier,
@@ -54,6 +61,19 @@ module RemoteFiles
 
     def synchronize!
       RemoteFiles.synchronize!(self)
+    end
+
+    def delete!
+      RemoteFiles.delete!(self)
+    end
+
+    def delete
+      begin
+        delete!
+        true
+      rescue RemoteFiles::Error => e
+        false
+      end
     end
   end
 end

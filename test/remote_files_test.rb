@@ -146,6 +146,15 @@ describe RemoteFiles do
     end
   end
 
+  describe '::delete!' do
+    it 'should delete the file from all the stores' do
+      @file.stored_in.replace([:mock1, :mock2])
+      @mock_store1.expects(:delete!).with(@file.identifier)
+      @mock_store2.expects(:delete!).with(@file.identifier)
+      RemoteFiles.delete!(@file)
+    end
+  end
+
   describe '::synchronize!' do
     describe 'when the file is not stored anywhere' do
       before { @file.stored_in.replace([]) }

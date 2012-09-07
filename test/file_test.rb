@@ -63,7 +63,7 @@ describe RemoteFiles::File do
     end
   end
 
-  describe 'current_url' do
+  describe '#current_url' do
     it 'should return the url from the first store where the file is currently stored' do
       @s3.stubs(:url).returns('s3_url')
       @cf.stubs(:url).returns('cf_url')
@@ -79,6 +79,14 @@ describe RemoteFiles::File do
 
       @file.stored_in.replace([])
       @file.current_url.must_be_nil
+    end
+
+    describe '::from_url' do
+      it 'should return a file from the first store that matches' do
+        url = 'http://something'
+        @cf.expects(:file_from_url).with(url).returns(@file)
+        assert_equal @file, RemoteFiles::File.from_url(url)
+      end
     end
   end
 end
