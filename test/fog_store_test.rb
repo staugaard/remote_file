@@ -111,14 +111,14 @@ describe RemoteFiles::FogStore do
       before { @store[:provider] = 'AWS' }
 
       it 'should create a file if the bucket matches' do
-        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/s3.txt')
+        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/cloud.txt')
         assert file
-        assert_equal 'key/on/s3.txt', file.identifier
+        assert_equal 'key/on/cloud.txt', file.identifier
 
-        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/other_bucket/key/on/s3.txt')
+        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/other_bucket/key/on/cloud.txt')
         assert !file
 
-        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/s3.txt')
+        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/cloud.txt')
         assert !file
       end
     end
@@ -127,14 +127,14 @@ describe RemoteFiles::FogStore do
       before { @store[:provider] = 'Rackspace' }
 
       it 'should create a file if the container matches' do
-        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/s3.txt')
+        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/cloud.txt')
         assert file
-        assert_equal 'key/on/s3.txt', file.identifier
+        assert_equal 'key/on/cloud.txt', file.identifier
 
-        file = @store.file_from_url('http://storage.cloudfiles.com/other_container/key/on/s3.txt')
+        file = @store.file_from_url('http://storage.cloudfiles.com/other_container/key/on/cloud.txt')
         assert !file
 
-        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/s3.txt')
+        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/cloud.txt')
         assert !file
       end
     end
@@ -143,7 +143,7 @@ describe RemoteFiles::FogStore do
       before { @store[:provider] = 'Google' }
 
       it 'should raise a RuntimeError' do
-        proc { @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/s3.txt') }.must_raise(RuntimeError)
+        proc { @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/cloud.txt') }.must_raise(RuntimeError)
       end
     end
   end

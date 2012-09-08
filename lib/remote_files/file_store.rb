@@ -13,16 +13,16 @@ module RemoteFiles
     end
 
     def store!(file)
-      ::File.open(directory + file.identifier, 'w') do |f|
+      (directory + file.identifier).open('w') do |f|
         f.write(file.content)
         # what about content-type?
       end
     end
 
     def retrieve!(identifier)
-      content = File.new(directory + identifier).read
+      content = (directory + identifier).read
 
-      ::File.new(identifier,
+      RemoteFiles::File.new(identifier,
         :content      => content,
         :stored_in    => [self.identifier]
         # what about content-type? maybe use the mime-types gem?
@@ -32,16 +32,16 @@ module RemoteFiles
     end
 
     def delete!(identifier)
-      ::File.delete(directory + identifier)
+      (directory + identifier).delete
     rescue Errno::ENOENT => e
     end
 
     def url(identifier)
-      "file://localhost/#{directory + identifier}"
+      "file://localhost#{directory + identifier}"
     end
 
     def url_matcher
-      @url_matcher ||= /file:\/\/localhost\/#{directory}\/(.*)/
+      @url_matcher ||= /file:\/\/localhost#{directory}\/(.*)/
     end
   end
 end
