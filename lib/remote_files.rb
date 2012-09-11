@@ -22,6 +22,30 @@ module RemoteFiles
     STORES_MAP[store_identifier] = store
   end
 
+  def self.configure(hash)
+    hash.each do |store_identifier, config|
+      #symbolize_keys!
+      config.each { |name, value| config[name.to_sym] = config.delete(name) }
+
+      #camelize
+      type = config[:type].gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase } + 'Store'
+
+      klass = RemoteFiles.const_get(type) rescue nil
+      unless klass
+        require "remote_files/#{config[:type]}_store"
+        klass = RemoteFiles.const_get(type)
+      end
+
+      config.delete(:type)
+
+      add_store(store_identifier.to_sym, :class => klass, :primary => !!config.delete(:primary)) do |store|
+        config.each do |name, value|
+          store[name] = value
+        end
+      end
+    end
+  end
+
   def self.stores
     raise "You need to configure add stores to RemoteFiles using 'RemoteFiles.add_store'" if STORES.empty?
     STORES
