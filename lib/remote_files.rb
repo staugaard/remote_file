@@ -25,7 +25,9 @@ module RemoteFiles
   def self.configure(hash)
     hash.each do |store_identifier, config|
       #symbolize_keys!
-      config.each { |name, value| config[name.to_sym] = config.delete(name) }
+      cfg = {}
+      config.each { |name, value| cfg[name.to_sym] = config[name] }
+      config = cfg
 
       #camelize
       type = config[:type].gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase } + 'Store'
