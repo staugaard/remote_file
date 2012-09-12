@@ -66,11 +66,22 @@ module RemoteFiles
     end
 
     def directory
-      @directory ||= connection.directories.new(
-        :key    => options[:directory],
-        :public => options[:public]
-      )
+      @directory ||= lookup_directory || create_directory
     end
 
+    protected
+
+    def lookup_directory
+      connection.directories.get(options[:directory])
+    end
+
+    def create_directory
+      connection.directories.new(
+        :key => options[:directory],
+        :public => options[:public]
+      ).tap do |dir|
+        dir.save
+      end
+    end
   end
 end

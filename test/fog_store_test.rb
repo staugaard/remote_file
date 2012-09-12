@@ -8,8 +8,6 @@ describe RemoteFiles::FogStore do
       :aws_secret_access_key => 'secret_access_key'
     })
 
-    @directory = @connection.directories.create(:key => 'directory')
-
     @store = RemoteFiles::FogStore.new(:fog)
     @store[:provider] = 'AWS'
     @store[:aws_access_key_id]     = 'access_key_id'
@@ -32,6 +30,16 @@ describe RemoteFiles::FogStore do
 
       directory.key.must_equal('directory')
     end
+
+    it 'should create the remote directory if it does not exist' do
+      assert_nil @connection.directories.get('directory')
+
+      directory = @store.directory
+      assert directory
+      assert_equal 'directory', directory.key
+
+      assert @connection.directories.get('directory')
+    end
   end
 
   describe '#store!' do
@@ -42,7 +50,7 @@ describe RemoteFiles::FogStore do
     it 'should store the file in the directory' do
       @store.store!(@file)
 
-      fog_file = @directory.files.get('identifier')
+      fog_file = @store.directory.files.get('identifier')
 
       fog_file.must_be_instance_of(Fog::Storage::AWS::File)
       fog_file.content_type.must_equal('text/plain')
@@ -50,14 +58,14 @@ describe RemoteFiles::FogStore do
     end
 
     it 'should raise a RemoteFiles::Error when an error happens' do
-      @directory.destroy
+      @store.directory.destroy
       proc { @store.store!(@file) }.must_raise(RemoteFiles::Error)
     end
   end
 
   describe '#retrieve!' do
     it 'should return a RemoteFiles::File when found' do
-      @directory.files.create(
+      @store.directory.files.create(
         :body         => 'content',
         :content_type => 'text/plain',
         :key          => 'identifier'
@@ -75,7 +83,7 @@ describe RemoteFiles::FogStore do
     end
 
     it 'should raise a RemoteFiles::Error when error' do
-      @directory.destroy
+      @store.directory.destroy
       proc { @store.retrieve!('identifier') }.must_raise(RemoteFiles::Error)
     end
   end
