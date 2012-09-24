@@ -4,14 +4,14 @@ require 'fog'
 module RemoteFiles
   class FogStore < AbstractStore
     def store!(file)
-      sucess = directory.files.create(
+      success = directory.files.create(
         :body         => file.content,
         :content_type => file.content_type,
         :key          => file.identifier,
         :public       => options[:public]
       )
 
-      raise RemoteFiles::Error unless sucess
+      raise RemoteFiles::Error unless success
 
       true
     rescue Fog::Errors::Error, Excon::Errors::Error
