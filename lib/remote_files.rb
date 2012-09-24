@@ -1,64 +1,31 @@
 require 'remote_files/version'
-require 'remote_files/fog_store'
+require 'remote_files/configuration'
 require 'remote_files/file'
 
 module RemoteFiles
   class Error < StandardError; end
   class NotFoundError < Error; end
 
-  STORES_MAP = {}
-  STORES = []
+  DEFAULT_INSTANCE = Configuration.new
 
   def self.add_store(store_identifier, options = {}, &block)
-    store = (options[:class] || FogStore).new(store_identifier)
-    block.call(store) if block_given?
-
-    if options[:primary]
-      STORES.unshift(store)
-    else
-      STORES << store
-    end
-
-    STORES_MAP[store_identifier] = store
+    DEFAULT_INSTANCE.add_store(store_identifier, options, &block)
   end
 
   def self.configure(hash)
-    hash.each do |store_identifier, config|
-      #symbolize_keys!
-      cfg = {}
-      config.each { |name, value| cfg[name.to_sym] = config[name] }
-      config = cfg
-
-      #camelize
-      type = config[:type].gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase } + 'Store'
-
-      klass = RemoteFiles.const_get(type) rescue nil
-      unless klass
-        require "remote_files/#{config[:type]}_store"
-        klass = RemoteFiles.const_get(type)
-      end
-
-      config.delete(:type)
-
-      add_store(store_identifier.to_sym, :class => klass, :primary => !!config.delete(:primary)) do |store|
-        config.each do |name, value|
-          store[name] = value
-        end
-      end
-    end
+    DEFAULT_INSTANCE.from_hash(hash)
   end
 
   def self.stores
-    raise "You need to configure add stores to RemoteFiles using 'RemoteFiles.add_store'" if STORES.empty?
-    STORES
+    DEFAULT_INSTANCE.stores
   end
 
   def self.lookup_store(store_identifier)
-    STORES_MAP[store_identifier]
+    DEFAULT_INSTANCE.lookup_store(store_identifier)
   end
 
   def self.primary_store
-    STORES.first
+    DEFAULT_INSTANCE.primary_store
   end
 
   def self.store_once!(file)
