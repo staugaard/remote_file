@@ -19,7 +19,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'fog'
 
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'minitest'
+  gem.add_development_dependency 'minitest', '~> 3.4.0'
   gem.add_development_dependency 'debugger'
   gem.add_development_dependency 'mocha'
   gem.add_development_dependency 'resque'
