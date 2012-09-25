@@ -53,4 +53,18 @@ module RemoteFiles
       raise "invalid call to RemoteFiles.synchronize_stores"
     end
   end
+
+  def self.delete_file(file = nil, &block)
+    if file
+      if @delete_file
+        @delete_file.call(file)
+      else
+        file.delete_now!(file)
+      end
+    elsif block_given?
+      @delete_file = block
+    else
+      raise "invalid call to RemoteFiles.delete_file"
+    end
+  end
 end

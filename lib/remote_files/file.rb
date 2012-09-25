@@ -63,7 +63,7 @@ module RemoteFiles
     end
 
     def delete!
-      configuration.delete!(self)
+      delete_now!
     end
 
     def delete
@@ -73,6 +73,10 @@ module RemoteFiles
       rescue RemoteFiles::Error => e
         false
       end
+    end
+
+    def delete_now!
+      configuration.delete!(self)
     end
   end
 end
