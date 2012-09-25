@@ -15,7 +15,9 @@ MiniTest::Spec.class_eval do
   before do
     Fog::Mock.reset
 
-    RemoteFiles::DEFAULT_INSTANCE.clear
+    RemoteFiles::CONFIGURATIONS.values.each do |conf|
+      conf.clear
+    end
 
     $syncs = []
     RemoteFiles.synchronize_stores do |file|

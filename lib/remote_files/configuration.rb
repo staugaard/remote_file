@@ -2,8 +2,11 @@ require 'remote_files/fog_store'
 
 module RemoteFiles
   class Configuration
-    def initialize(config = {})
-      @stores = []
+    attr_reader :name
+
+    def initialize(name, config = {})
+      @name       = name
+      @stores     = []
       @stores_map = {}
       from_hash(config)
     end
@@ -37,8 +40,9 @@ module RemoteFiles
           end
         end
       end
-    end
 
+      self
+    end
 
     def add_store(store_identifier, options = {}, &block)
       store = (options[:class] || FogStore).new(store_identifier)
@@ -63,8 +67,57 @@ module RemoteFiles
     end
 
     def primary_store
-      @stores.first
+      stores.first
     end
 
+    def store_once!(file)
+      return file.stored_in.first if file.stored?
+
+      exception = nil
+
+      stores.each do |store|
+        begin
+          stored = store.store!(file)
+          file.stored_in << store.identifier
+          break
+        rescue ::RemoteFiles::Error => e
+          exception = e
+        end
+      end
+
+      raise exception unless file.stored?
+
+      file.stored_in.first
+    end
+
+    def store!(file)
+      store_once!(file) unless file.stored?
+
+      RemoteFiles.synchronize_stores(file) unless file.stored_everywhere?
+
+      true
+    end
+
+    def delete!(file)
+      file.stored_in.each do |store_identifier|
+        store = lookup_store(store_identifier)
+        store.delete!(file.identifier)
+      end
+    end
+
+    def synchronize!(file)
+      file.missing_stores.each do |store_identifier|
+        store = lookup_store(store_identifier)
+        store.store!(file)
+        file.stored_in << store.identifier
+      end
+    end
+
+    def file_from_url(url)
+      stores.each do |store|
+        file = store.file_from_url(url)
+        return file if file
+      end
+    end
   end
 end

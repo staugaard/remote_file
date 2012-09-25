@@ -13,7 +13,7 @@ describe RemoteFiles do
       before { @non_primary_store = RemoteFiles.add_store(:primary) }
 
       it 'should add it to the tail of the list of stores' do
-        RemoteFiles.stores.must_equal([@mock_store1, @mock_store2, @non_primary_store])
+        RemoteFiles.default_configuration.stores.must_equal([@mock_store1, @mock_store2, @non_primary_store])
       end
     end
 
@@ -21,7 +21,7 @@ describe RemoteFiles do
       before { @primary_store = RemoteFiles.add_store(:primary, :primary => true) }
 
       it 'should add it to the head of the list of stores' do
-        RemoteFiles.stores.must_equal([@primary_store, @mock_store1, @mock_store2])
+        RemoteFiles.default_configuration.stores.must_equal([@primary_store, @mock_store1, @mock_store2])
       end
     end
   end
@@ -135,7 +135,7 @@ describe RemoteFiles do
       before { @file.stored_in.replace([]) }
 
       it 'should store the file once' do
-        RemoteFiles.expects(:store_once!).with(@file)
+        @file.configuration.expects(:store_once!).with(@file)
         RemoteFiles.store!(@file)
       end
 

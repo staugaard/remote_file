@@ -17,7 +17,8 @@ describe RemoteFiles::ResqueJob do
         :identifier => 'identifier',
         :content_type => 'text/plain',
         :stored_in => [:s3],
-        :foo => :bar
+        :foo => :bar,
+        :configuration => :default
       )
 
       RemoteFiles.synchronize_stores(file)
