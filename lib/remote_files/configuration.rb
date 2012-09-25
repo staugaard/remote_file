@@ -58,7 +58,7 @@ module RemoteFiles
     end
 
     def stores
-      raise "You need to configure add stores to RemoteFiles" if @stores.empty?
+      raise "You need to configure add stores to the #{name} RemoteFiles configuration" if @stores.empty?
       @stores
     end
 

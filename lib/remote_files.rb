@@ -15,10 +15,6 @@ module RemoteFiles
     CONFIGURATIONS[:default]
   end
 
-  def self.add_store(store_identifier, options = {}, &block)
-    default_configuration.add_store(store_identifier, options, &block)
-  end
-
   def self.configure(name, hash = {})
     if name.is_a?(Hash)
       hash = name
@@ -26,6 +22,10 @@ module RemoteFiles
     end
 
     CONFIGURATIONS[name].from_hash(hash)
+  end
+
+  def self.add_store(store_identifier, options = {}, &block)
+    default_configuration.add_store(store_identifier, options, &block)
   end
 
   def self.stores
@@ -38,22 +38,6 @@ module RemoteFiles
 
   def self.primary_store
     default_configuration.primary_store
-  end
-
-  def self.store_once!(file)
-    file.configuration.store_once!(file)
-  end
-
-  def self.store!(file)
-    file.configuration.store!(file)
-  end
-
-  def self.delete!(file)
-    file.configuration.delete!(file)
-  end
-
-  def self.synchronize!(file)
-    file.configuration.synchronize!(file)
   end
 
   def self.synchronize_stores(file = nil, &block)
