@@ -57,8 +57,12 @@ module RemoteFiles
       @stores_map[store_identifier] = store
     end
 
+    def configured?
+      !@stores.empty?
+    end
+
     def stores
-      raise "You need to configure add stores to the #{name} RemoteFiles configuration" if @stores.empty?
+      raise "You need to configure add stores to the #{name} RemoteFiles configuration" unless configured?
       @stores
     end
 

@@ -13,6 +13,7 @@ module RemoteFiles
 
     def self.clear!
       RemoteFiles::CONFIGURATIONS.values.each do |config|
+        next unless config.configured?
         config.stores.each do |store|
           store.clear! if store.is_a?(RemoteFiles::MemoryStore)
         end
