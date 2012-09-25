@@ -45,7 +45,7 @@ module RemoteFiles
       if @synchronize_stores
         @synchronize_stores.call(file)
       else
-        synchronize!(file)
+        file.synchronize!(file)
       end
     elsif block_given?
       @synchronize_stores = block
