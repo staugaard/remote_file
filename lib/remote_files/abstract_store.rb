@@ -34,14 +34,14 @@ module RemoteFiles
       raise "You need to implement #{self.class.name}:#url_matcher"
     end
 
-    def file_from_url(url)
+    def file_from_url(url, options = {})
       matched = url_matcher.match(url)
 
       return nil unless matched
 
       file_identifier = matched[1]
 
-      RemoteFiles::File.new(file_identifier, :stored_in => [identifier])
+      RemoteFiles::File.new(file_identifier, options.merge(:stored_in => [identifier]))
     end
   end
 end

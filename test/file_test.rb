@@ -84,7 +84,7 @@ describe RemoteFiles::File do
     describe '::from_url' do
       it 'should return a file from the first store that matches' do
         url = 'http://something'
-        @cf.expects(:file_from_url).with(url).returns(@file)
+        @cf.expects(:file_from_url).with(url, :configuration => :default).returns(@file)
         assert_equal @file, RemoteFiles::File.from_url(url)
       end
     end

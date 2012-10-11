@@ -175,4 +175,12 @@ describe RemoteFiles::Configuration do
     end
   end
 
+  describe '#file_from_url' do
+    it 'should return a file from this configuration' do
+      file = @configuration.file_from_url('memory://mock2/foo')
+      assert file
+      file.configuration.must_equal @configuration
+    end
+  end
+
 end

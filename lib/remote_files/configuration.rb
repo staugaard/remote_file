@@ -119,7 +119,7 @@ module RemoteFiles
 
     def file_from_url(url)
       stores.each do |store|
-        file = store.file_from_url(url)
+        file = store.file_from_url(url, :configuration => name)
         return file if file
       end
     end
