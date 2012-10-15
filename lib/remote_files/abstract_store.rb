@@ -39,7 +39,7 @@ module RemoteFiles
 
       return nil unless matched
 
-      file_identifier = matched[1]
+      file_identifier = CGI.unescape(matched[1])
 
       RemoteFiles::File.new(file_identifier, options.merge(:stored_in => [identifier]))
     end

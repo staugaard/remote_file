@@ -176,10 +176,17 @@ describe RemoteFiles::Configuration do
   end
 
   describe '#file_from_url' do
+    before do
+      @file = @configuration.file_from_url('memory://mock2/foo%40bar')
+      assert @file
+    end
+
+    it 'should unescape the identifier' do
+      @file.identifier.must_equal "foo@bar"
+    end
+
     it 'should return a file from this configuration' do
-      file = @configuration.file_from_url('memory://mock2/foo')
-      assert file
-      file.configuration.must_equal @configuration
+      @file.configuration.must_equal @configuration
     end
   end
 
