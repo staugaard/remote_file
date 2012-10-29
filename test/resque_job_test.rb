@@ -65,7 +65,7 @@ describe RemoteFiles::ResqueJob do
       RemoteFiles::ResqueJob.perform(@options.merge(:_action => :synchronize))
     end
 
-    it 'should call #synchronize! on the reconstructed file when asked to' do
+    it 'should call #delete_now! on the reconstructed file when asked to' do
       @file.expects(:delete_now!)
 
       RemoteFiles::ResqueJob.perform(@options.merge(:_action => :delete))

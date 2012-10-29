@@ -131,12 +131,37 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::delete!' do
+  describe '::delete_now!' do
     it 'should delete the file from all the stores' do
       @file.stored_in.replace([:mock1, :mock2])
       @mock_store1.expects(:delete!).with(@file.identifier)
       @mock_store2.expects(:delete!).with(@file.identifier)
-      @configuration.delete!(@file)
+      @configuration.delete_now!(@file)
+    end
+  end
+
+  describe '::delete!' do
+    describe 'when no handler has been defined' do
+      before do
+        RemoteFiles.instance_variable_set(:@delete_file, nil)
+      end
+
+      it 'deletes the file' do
+        @file.expects(:delete_now!)
+        @configuration.delete!(@file)
+      end
+    end
+
+    describe 'when a handler is defined' do
+      before do
+        @deleted_files = []
+        RemoteFiles.delete_file { |file| @deleted_files << file }
+      end
+
+      it 'should call the handler' do
+        @configuration.delete!(@file)
+        @deleted_files.must_equal [@file]
+      end
     end
   end
 

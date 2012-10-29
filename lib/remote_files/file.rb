@@ -63,7 +63,7 @@ module RemoteFiles
     end
 
     def delete!
-      delete_now!
+      configuration.delete!(self)
     end
 
     def delete
@@ -76,7 +76,7 @@ module RemoteFiles
     end
 
     def delete_now!
-      configuration.delete!(self)
+      configuration.delete_now!(self)
     end
   end
 end

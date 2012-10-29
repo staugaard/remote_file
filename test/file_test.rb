@@ -89,4 +89,18 @@ describe RemoteFiles::File do
       end
     end
   end
+
+  describe '#delete_now!' do
+    it 'asks the configuration to delete the file' do
+      @file.configuration.expects(:delete_now!).with(@file).returns(true)
+      @file.delete_now!
+    end
+  end
+
+  describe '#delete!' do
+    it 'asks the configuration to delete the file' do
+      @file.configuration.expects(:delete!).with(@file).returns(true)
+      @file.delete!
+    end
+  end
 end

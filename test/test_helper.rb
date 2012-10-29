@@ -19,9 +19,10 @@ MiniTest::Spec.class_eval do
       conf.clear
     end
 
-    $syncs = []
     RemoteFiles.synchronize_stores do |file|
-      $syncs << {:identifier => file.identifier, :missing_stores => file.missing_stores}
+    end
+
+    RemoteFiles.delete_file do |file|
     end
   end
 end

@@ -103,6 +103,10 @@ module RemoteFiles
     end
 
     def delete!(file)
+      RemoteFiles.delete_file(file)
+    end
+
+    def delete_now!(file)
       file.stored_in.each do |store_identifier|
         store = lookup_store(store_identifier)
         store.delete!(file.identifier)

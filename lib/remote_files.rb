@@ -59,7 +59,7 @@ module RemoteFiles
       if @delete_file
         @delete_file.call(file)
       else
-        file.delete_now!(file)
+        file.delete_now!
       end
     elsif block_given?
       @delete_file = block
