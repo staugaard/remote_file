@@ -3,11 +3,16 @@ module RemoteFiles
     attr_reader :content, :content_type, :identifier, :stored_in, :configuration
 
     def initialize(identifier, options = {})
+      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content]
+      known_keys.each do |key|
+        options[key] ||= options.delete(key.to_s)
+      end
+
       @identifier    = identifier
-      @stored_in     = options[:stored_in] || []
+      @stored_in     = (options[:stored_in] || []).map(&:to_sym)
       @content       = options.delete(:content)
       @content_type  = options[:content_type]
-      @configuration = RemoteFiles::CONFIGURATIONS[options[:configuration] || :default]
+      @configuration = RemoteFiles::CONFIGURATIONS[(options[:configuration] || :default).to_sym]
       @options       = options
     end
 

@@ -67,7 +67,7 @@ module RemoteFiles
     end
 
     def lookup_store(store_identifier)
-      @stores_map[store_identifier]
+      @stores_map[store_identifier.to_sym]
     end
 
     def primary_store

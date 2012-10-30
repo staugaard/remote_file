@@ -4,15 +4,16 @@ require 'resque'
 module RemoteFiles
   class ResqueJob
     def self.perform(options)
-      action = options.delete(:_action)
+      identifier = options.delete(:identifier) || options.delete("identifier")
+      action     = options.delete(:_action)    || options.delete("_action")
 
-      file = RemoteFiles::File.new(options.delete(:identifier), options)
+      file = RemoteFiles::File.new(identifier, options)
 
-      case action
+      case action.to_sym
       when :synchronize
         file.synchronize!
       when :delete
-        file.delete_now!(file)
+        file.delete_now!
       else
         raise "unknown action #{action.inspect}"
       end

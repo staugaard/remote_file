@@ -21,7 +21,7 @@ module RemoteFiles
       name = :default
     end
 
-    CONFIGURATIONS[name].from_hash(hash)
+    CONFIGURATIONS[name.to_sym].from_hash(hash)
   end
 
   def self.add_store(store_identifier, options = {}, &block)
