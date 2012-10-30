@@ -202,7 +202,7 @@ describe RemoteFiles::Configuration do
 
   describe '#file_from_url' do
     before do
-      @file = @configuration.file_from_url('memory://mock2/foo%40bar')
+      @file = @configuration.file_from_url('memory://mock2/foo%40bar', :foo => :bar)
       assert @file
     end
 
@@ -212,6 +212,10 @@ describe RemoteFiles::Configuration do
 
     it 'should return a file from this configuration' do
       @file.configuration.must_equal @configuration
+    end
+
+    it 'should pass on options' do
+      @file.options[:foo].must_equal :bar
     end
   end
 

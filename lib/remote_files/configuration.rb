@@ -121,9 +121,9 @@ module RemoteFiles
       end
     end
 
-    def file_from_url(url)
+    def file_from_url(url, options = {})
       stores.each do |store|
-        file = store.file_from_url(url, :configuration => name)
+        file = store.file_from_url(url, options.merge(:configuration => name))
         return file if file
       end
     end
