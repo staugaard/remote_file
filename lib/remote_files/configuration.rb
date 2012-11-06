@@ -114,8 +114,7 @@ module RemoteFiles
     end
 
     def synchronize!(file)
-      file.missing_stores.each do |store_identifier|
-        store = lookup_store(store_identifier)
+      file.missing_stores.each do |store|
         store.store!(file)
         file.stored_in << store.identifier
       end

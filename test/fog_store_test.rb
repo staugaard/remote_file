@@ -174,4 +174,10 @@ describe RemoteFiles::FogStore do
     end
   end
 
+  describe '#directory_name' do
+    it 'returns the name of the directory' do
+      @store.directory_name.must_equal 'directory'
+    end
+  end
+
 end

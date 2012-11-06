@@ -43,5 +43,9 @@ module RemoteFiles
     def url_matcher
       @url_matcher ||= /file:\/\/localhost#{directory}\/(.*)/
     end
+
+    def directory_name
+      options[:directory].to_s
+    end
   end
 end

@@ -68,4 +68,11 @@ describe RemoteFiles::MemoryStore do
     end
   end
 
+
+  describe '#directory_name' do
+    it 'returns the store identifier' do
+      @store.directory_name.must_equal 'mem'
+    end
+  end
+
 end

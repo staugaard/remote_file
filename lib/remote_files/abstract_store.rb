@@ -14,6 +14,10 @@ module RemoteFiles
       options[name] = value
     end
 
+    def directory_name
+      raise "You need to implement #{self.class.name}:#directory_name"
+    end
+
     def store!(file)
       raise "You need to implement #{self.class.name}#store!"
     end

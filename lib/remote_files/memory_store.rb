@@ -34,6 +34,10 @@ module RemoteFiles
       )
     end
 
+    def directory_name
+      self.identifier.to_s
+    end
+
     def delete!(identifier)
       data.delete(identifier)
     end

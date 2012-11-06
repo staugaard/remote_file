@@ -37,8 +37,12 @@ module RemoteFiles
       missing_stores.empty?
     end
 
+    def stores
+      @stored_in.map { |store_id| configuration.lookup_store(store_id) }
+    end
+
     def missing_stores
-      configuration.stores.map(&:identifier) - @stored_in
+      configuration.stores - stores
     end
 
     def url(store_identifier = nil)
@@ -53,6 +57,21 @@ module RemoteFiles
       return nil if prioritized_stores.empty?
 
       url(prioritized_stores[0])
+    end
+
+    def retrieve!
+      stores.each do |store|
+        begin
+          file = store.retrieve!(identifier)
+          next unless file
+          @content      = file.content
+          @content_type = file.content_type
+          return true
+        rescue Error => e
+        end
+      end
+
+      raise NotFoundError
     end
 
     def store!

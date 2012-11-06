@@ -35,9 +35,9 @@ module RemoteFiles
     def url(identifier)
       case options[:provider]
       when 'AWS'
-        "https://s3.amazonaws.com/#{options[:directory]}/#{Fog::AWS.escape(identifier)}"
+        "https://s3.amazonaws.com/#{directory_name}/#{Fog::AWS.escape(identifier)}"
       when 'Rackspace'
-        "https://storage.cloudfiles.com/#{options[:directory]}/#{Fog::Rackspace.escape(identifier, '/')}"
+        "https://storage.cloudfiles.com/#{directory_name}/#{Fog::Rackspace.escape(identifier, '/')}"
       else
         raise "#{self.class.name}#url was not implemented for the #{options[:provider]} provider"
       end
@@ -46,9 +46,9 @@ module RemoteFiles
     def url_matcher
       @url_matcher ||= case options[:provider]
       when 'AWS'
-        /https?:\/\/s3[^\.]*.amazonaws.com\/#{options[:directory]}\/(.*)/
+        /https?:\/\/s3[^\.]*.amazonaws.com\/#{directory_name}\/(.*)/
       when 'Rackspace'
-        /https?:\/\/storage.cloudfiles.com\/#{options[:directory]}\/(.*)/
+        /https?:\/\/storage.cloudfiles.com\/#{directory_name}\/(.*)/
       else
         raise "#{self.class.name}#url_matcher was not implemented for the #{options[:provider]} provider"
       end
@@ -65,6 +65,10 @@ module RemoteFiles
       @connection ||= Fog::Storage.new(connection_options)
     end
 
+    def directory_name
+      options[:directory]
+    end
+
     def directory
       @directory ||= lookup_directory || create_directory
     end
@@ -72,12 +76,12 @@ module RemoteFiles
     protected
 
     def lookup_directory
-      connection.directories.get(options[:directory])
+      connection.directories.get(directory_name)
     end
 
     def create_directory
       connection.directories.new(
-        :key => options[:directory],
+        :key => directory_name,
         :public => options[:public]
       ).tap do |dir|
         dir.save
