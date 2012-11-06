@@ -126,6 +126,8 @@ module RemoteFiles
         file = store.file_from_url(url, options.merge(:configuration => name))
         return file if file
       end
+
+      nil
     end
   end
 end

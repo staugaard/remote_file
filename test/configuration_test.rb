@@ -217,6 +217,11 @@ describe RemoteFiles::Configuration do
     it 'should pass on options' do
       @file.options[:foo].must_equal :bar
     end
+
+    it 'returns nil if the url does not match a store' do
+      file = @configuration.file_from_url('http://foo/bar', :foo => :bar)
+      file.must_be_nil
+    end
   end
 
 end
