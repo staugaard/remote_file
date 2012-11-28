@@ -26,7 +26,7 @@ module RemoteFiles
       File.new(identifier,
         :content      => fog_file.body,
         :content_type => fog_file.content_type,
-        :stored_in    => [self.identifier]
+        :stored_in    => [self]
       )
     rescue Fog::Errors::Error, Excon::Errors::Error
       raise RemoteFiles::Error, $!.message, $!.backtrace

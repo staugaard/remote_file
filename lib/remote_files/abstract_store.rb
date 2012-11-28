@@ -14,6 +14,10 @@ module RemoteFiles
       options[name] = value
     end
 
+    def to_sym
+      @identifier.to_sym
+    end
+
     def directory_name
       raise "You need to implement #{self.class.name}:#directory_name"
     end
@@ -45,7 +49,7 @@ module RemoteFiles
 
       file_identifier = CGI.unescape(matched[1])
 
-      RemoteFiles::File.new(file_identifier, options.merge(:stored_in => [identifier]))
+      RemoteFiles::File.new(file_identifier, options.merge(:stored_in => [self]))
     end
   end
 end

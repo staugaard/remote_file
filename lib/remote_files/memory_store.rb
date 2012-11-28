@@ -30,7 +30,7 @@ module RemoteFiles
       File.new(identifier,
         :content      => data[identifier][:content],
         :content_type => data[identifier][:content_type],
-        :stored_in    => [self.identifier]
+        :stored_in    => [self]
       )
     end
 

@@ -1,4 +1,5 @@
 require 'pathname'
+require 'fileutils'
 
 # This is good for use in deveopment
 
@@ -28,7 +29,7 @@ module RemoteFiles
 
       RemoteFiles::File.new(identifier,
         :content      => content,
-        :stored_in    => [self.identifier]
+        :stored_in    => [self]
         # what about content-type? maybe use the mime-types gem?
       )
     rescue Errno::ENOENT => e
