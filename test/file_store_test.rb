@@ -11,13 +11,13 @@ describe RemoteFiles::FileStore do
 
   describe '#store!' do
     before do
-      @file = RemoteFiles::File.new('identifier', :content_type => 'text/plain', :content => 'content')
+      @file = RemoteFiles::File.new('foo/identifier', :content_type => 'text/plain', :content => 'content')
     end
 
     it 'should store the file on disk' do
       @store.store!(@file)
 
-      file_path = @directory + 'identifier'
+      file_path = @directory + 'foo/identifier'
       file_path.exist?
 
       assert_equal 'content', file_path.read

@@ -13,7 +13,11 @@ module RemoteFiles
     end
 
     def store!(file)
-      (directory + file.identifier).open('w') do |f|
+      file_name = directory + file.identifier
+
+      FileUtils.mkdir_p(file_name.parent)
+
+      file_name.open('w') do |f|
         f.write(file.content)
         # what about content-type?
       end
