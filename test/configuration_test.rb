@@ -1,3 +1,4 @@
+require 'logger'
 require_relative 'test_helper'
 require 'remote_files/mock_store'
 
@@ -7,6 +8,25 @@ describe RemoteFiles::Configuration do
     @file = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain')
     @mock_store1 = @configuration.add_store(:mock1, :class => RemoteFiles::MockStore)
     @mock_store2 = @configuration.add_store(:mock2, :class => RemoteFiles::MockStore)
+  end
+
+  describe '#logger' do
+    it 'defaults to RemoteFiles.logger' do
+      logger = Logger.new($stdout)
+      RemoteFiles.logger = logger
+      configuration_logger = @configuration.logger
+      RemoteFiles.logger = nil
+
+      configuration_logger.must_equal logger
+
+      new_logger = Logger.new($stdout)
+
+      @configuration.logger = new_logger
+      @configuration.logger.must_equal new_logger
+
+      @configuration.logger = nil
+      @configuration.logger.must_be_nil
+    end
   end
 
   describe '::add_store' do

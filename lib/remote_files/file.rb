@@ -13,7 +13,16 @@ module RemoteFiles
       @content       = options.delete(:content)
       @content_type  = options[:content_type]
       @configuration = RemoteFiles::CONFIGURATIONS[(options[:configuration] || :default).to_sym]
+      @logger        = options[:logger]
       @options       = options
+    end
+
+    def logger=(logger)
+      @logger = logger
+    end
+
+    def logger
+      @logger ||= configuration ? configuration.logger : RemoteFiles.logger
     end
 
     def self.from_url(url)

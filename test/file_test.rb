@@ -1,3 +1,4 @@
+require 'logger'
 require_relative 'test_helper'
 
 describe RemoteFiles::File do
@@ -6,6 +7,27 @@ describe RemoteFiles::File do
     @cf = RemoteFiles.add_store(:cf, :class => RemoteFiles::MockStore)
 
     @file = RemoteFiles::File.new('identifier')
+  end
+
+  describe '#logger' do
+    it 'defaults to the configuration logger' do
+      configuration_logger = Logger.new($stdout)
+      configuration = RemoteFiles.configure(:test)
+      configuration.logger = configuration_logger
+
+      file = RemoteFiles::File.new('identifier', :configuration => :test)
+      file.logger.must_equal configuration_logger
+
+      new_logger = Logger.new($stdout)
+      file.logger = new_logger
+      file.logger.must_equal new_logger
+    end
+
+    it 'is settable at initialization' do
+      logger = Logger.new($stdout)
+      file = RemoteFiles::File.new('identifier', :logger => logger)
+      file.logger.must_equal logger
+    end
   end
 
   describe '#stored?' do

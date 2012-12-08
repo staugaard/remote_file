@@ -24,6 +24,16 @@ module RemoteFiles
     CONFIGURATIONS[name.to_sym].from_hash(hash)
   end
 
+  def self.logger=(logger)
+    @logger = logger
+  end
+
+  def self.logger
+    return @logger if defined?(@logger)
+
+    @logger ||= defined?(Rails) ? Rails.logger : nil
+  end
+
   def self.add_store(store_identifier, options = {}, &block)
     default_configuration.add_store(store_identifier, options, &block)
   end

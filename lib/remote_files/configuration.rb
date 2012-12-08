@@ -11,6 +11,14 @@ module RemoteFiles
       from_hash(config)
     end
 
+    def logger=(logger)
+      @logger = logger
+    end
+
+    def logger
+      @logger ||= RemoteFiles.logger
+    end
+
     def clear
       @stores.clear
       @stores_map.clear
@@ -85,6 +93,7 @@ module RemoteFiles
           file.stored_in << store.identifier
           break
         rescue ::RemoteFiles::Error => e
+          file.logger.info(e) if file.logger
           exception = e
         end
       end
