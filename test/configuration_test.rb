@@ -84,6 +84,8 @@ describe RemoteFiles::Configuration do
 
     describe 'when the first store fails' do
       before do
+        @log = StringIO.new
+        @file.logger = Logger.new(@log)
         @mock_store1.expects(:store!).with(@file).raises(RemoteFiles::Error)
         @configuration.store_once!(@file)
       end
@@ -91,6 +93,10 @@ describe RemoteFiles::Configuration do
       it 'should only store the file in the second store' do
         @mock_store1.data['file'].must_be_nil
         @mock_store2.data['file'].must_equal(:content => 'content', :content_type => 'text/plain')
+      end
+
+      it 'logs that the first store failed' do
+        @log.string.must_match /RemoteFiles::Error/
       end
     end
 
