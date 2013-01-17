@@ -165,6 +165,11 @@ describe RemoteFiles::FogStore do
       )
     end
 
+    it 'raises a NotFoundError if the file does not exist' do
+      @store.directory.key = 'unknown' # to force an exception out of the fog
+      lambda { @store.delete!('unknown') }.must_raise(RemoteFiles::NotFoundError)
+    end
+
     it 'should destroy the file' do
       assert @store.directory.files.get('identifier')
 

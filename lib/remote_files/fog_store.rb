@@ -56,6 +56,8 @@ module RemoteFiles
 
     def delete!(identifier)
       connection.delete_object(directory.key, identifier)
+    rescue Fog::Errors::NotFound, Excon::Errors::NotFound
+      raise NotFoundError, $!.message, $!.backtrace
     end
 
     def connection

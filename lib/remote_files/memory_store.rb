@@ -39,6 +39,7 @@ module RemoteFiles
     end
 
     def delete!(identifier)
+      raise NotFoundError, "#{identifier} not found in #{self.identifier} store" unless data.has_key?(identifier)
       data.delete(identifier)
     end
 

@@ -158,11 +158,41 @@ describe RemoteFiles::Configuration do
   end
 
   describe '::delete_now!' do
-    it 'should delete the file from all the stores' do
+    before do
       @file.stored_in.replace([:mock1, :mock2])
-      @mock_store1.expects(:delete!).with(@file.identifier)
-      @mock_store2.expects(:delete!).with(@file.identifier)
-      @configuration.delete_now!(@file)
+    end
+
+    describe 'when the file is in all of stores' do
+      before do
+        @mock_store1.data[@file.identifier] = {:content_type => 'text/plain', :content => 'content'}
+        @mock_store2.data[@file.identifier] = {:content_type => 'text/plain', :content => 'content'}
+      end
+
+      it 'should delete the file from all the stores' do
+        @configuration.delete_now!(@file)
+        @mock_store1.data.has_key?(@file.identifier).must_equal false
+        @mock_store2.data.has_key?(@file.identifier).must_equal false
+      end
+    end
+
+    describe 'when the file is in some of stores' do
+      before do
+        @mock_store2.data[@file.identifier] = {:content_type => 'text/plain', :content => 'content'}
+      end
+
+      it 'should delete the file from all the stores' do
+        @configuration.delete_now!(@file)
+        @mock_store1.data.has_key?(@file.identifier).must_equal false
+        @mock_store2.data.has_key?(@file.identifier).must_equal false
+      end
+    end
+
+    describe 'when the file is in none of stores' do
+      it 'raises a NotFoundError' do
+        lambda { @configuration.delete_now!(@file) }.must_raise(RemoteFiles::NotFoundError)
+        @mock_store1.data.has_key?(@file.identifier).must_equal false
+        @mock_store2.data.has_key?(@file.identifier).must_equal false
+      end
     end
   end
 

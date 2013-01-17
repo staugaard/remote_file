@@ -59,6 +59,10 @@ describe RemoteFiles::MemoryStore do
       @store.data['identifier'] = {:content_type => 'text/plain', :content => 'content'}
     end
 
+    it 'raises a NotFoundError if the file does not exist' do
+      lambda { @store.delete!('unknown') }.must_raise(RemoteFiles::NotFoundError)
+    end
+
     it 'should destroy the file' do
       assert @store.data['identifier']
 

@@ -116,10 +116,21 @@ module RemoteFiles
     end
 
     def delete_now!(file)
+      exceptions = []
       file.stored_in.each do |store_identifier|
         store = lookup_store(store_identifier)
-        store.delete!(file.identifier)
+        begin
+          store.delete!(file.identifier)
+        rescue NotFoundError => e
+          exceptions << e
+        end
       end
+
+      if exceptions.size == file.stored_in.size # they all failed
+        raise exceptions.first
+      end
+
+      true
     end
 
     def synchronize!(file)

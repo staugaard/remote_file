@@ -32,13 +32,14 @@ module RemoteFiles
         :stored_in    => [self]
         # what about content-type? maybe use the mime-types gem?
       )
-    rescue Errno::ENOENT => e
-      raise NotFoundError, e.message
+    rescue Errno::ENOENT
+      raise NotFoundError, $!.message, $!.backtrace
     end
 
     def delete!(identifier)
       (directory + identifier).delete
-    rescue Errno::ENOENT => e
+    rescue Errno::ENOENT
+      raise NotFoundError, $!.message, $!.backtrace
     end
 
     def url(identifier)

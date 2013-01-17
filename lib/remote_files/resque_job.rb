@@ -13,7 +13,10 @@ module RemoteFiles
       when :synchronize
         file.synchronize!
       when :delete
-        file.delete_now!
+        begin
+          file.delete_now!
+        rescue NotFoundError
+        end
       else
         raise "unknown action #{action.inspect}"
       end
