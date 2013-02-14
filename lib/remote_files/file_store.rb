@@ -19,8 +19,14 @@ module RemoteFiles
       FileUtils.mkdir_p(file_name.parent)
 
       file_name.open('w') do |f|
-        f.write(file.content)
-        # what about content-type?
+        if file.content.respond_to?(:read)
+          while blk = file.content.read(2048)
+            f << blk
+          end
+        else
+          f.write(file.content)
+          # what about content-type?
+        end
       end
     end
 
