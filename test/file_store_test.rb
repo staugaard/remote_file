@@ -11,16 +11,38 @@ describe RemoteFiles::FileStore do
 
   describe '#store!' do
     before do
-      @file = RemoteFiles::File.new('foo/identifier', :content_type => 'text/plain', :content => 'content')
+      @file = RemoteFiles::File.new('foo/identifier', :content_type => 'text/plain', :content => content)
     end
 
-    it 'should store the file on disk' do
-      @store.store!(@file)
+    def self.it_should_store_file
+      it 'should store the file on disk' do
+        @store.store!(@file)
 
-      file_path = @directory + 'foo/identifier'
-      file_path.exist?
+        file_path = @directory + 'foo/identifier'
+        file_path.exist?
 
-      assert_equal 'content', file_path.read
+        assert_equal 'content', file_path.read
+      end
+    end
+
+    describe "content = string" do
+      let(:content) { "content" }
+      it_should_store_file
+    end
+
+    describe "content = stringio" do
+      let(:content) { StringIO.new("content") }
+      it_should_store_file
+    end
+
+    describe "content = io" do
+      let(:content) do
+        mock('IO').tap do |io|
+          io.stubs(:read).returns("content").then.returns(nil)
+        end
+      end
+
+      it_should_store_file
     end
   end
 
