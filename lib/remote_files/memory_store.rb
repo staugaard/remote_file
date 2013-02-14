@@ -21,7 +21,8 @@ module RemoteFiles
     end
 
     def store!(file)
-      data[file.identifier] = { :content => file.content, :content_type => file.content_type}
+      content = file.content.respond_to?(:read) ? file.content.read : file.content
+      data[file.identifier] = { :content => content, :content_type => file.content_type}
     end
 
     def retrieve!(identifier)
