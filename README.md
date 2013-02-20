@@ -1,5 +1,7 @@
 # RemoteFiles
 
+# Moved here: https://github.com/zendesk/remote_files
+
 A library for uploading files to multiple remote storage backends like Amazon S3 and Rackspace CloudFiles.
 
 The purpose of the library is to implement a simple interface for uploading files to multiple backends
