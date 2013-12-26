@@ -1,4 +1,3 @@
-require 'remote_files/abstract_store'
 require 'fog'
 
 module RemoteFiles

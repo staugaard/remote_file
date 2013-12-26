@@ -1,8 +1,14 @@
-require 'remote_files/version'
-require 'remote_files/configuration'
-require 'remote_files/file'
-
 module RemoteFiles
+  autoload :AbstractStore, 'remote_files/abstract_store'
+  autoload :Configuration, 'remote_files/configuration'
+  autoload :File, 'remote_files/file'
+  autoload :FileStore, 'remote_files/file_store'
+  autoload :FogStore, 'remote_files/fog_store'
+  autoload :MemoryStore, 'remote_files/memory_store'
+  autoload :MockStore, 'remote_files/mock_store'
+  autoload :ResqueJob, 'remote_files/resque_job'
+  autoload :VERSION, 'remote_files/version'
+
   class Error < StandardError; end
   class NotFoundError < Error; end
 

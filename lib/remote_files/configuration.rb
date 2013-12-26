@@ -1,5 +1,3 @@
-require 'remote_files/fog_store'
-
 module RemoteFiles
   class Configuration
     attr_reader :name
