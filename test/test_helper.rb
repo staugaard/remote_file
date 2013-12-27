@@ -9,8 +9,8 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'remote_files'
 
 require 'minitest/autorun'
-
 require 'mocha/setup'
+require 'fog'
 
 Fog.mock!
 
