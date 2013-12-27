@@ -2,16 +2,17 @@ require 'bundler/setup'
 
 begin
   require 'debugger'
-rescue LoadError => e
+rescue LoadError
 end
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'remote_files'
-
 require 'minitest/autorun'
+require 'minitest/rg'
 require 'mocha/setup'
 require 'fog'
 
+
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+require 'remote_files'
 Fog.mock!
 
 MiniTest::Spec.class_eval do
