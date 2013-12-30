@@ -14,11 +14,4 @@ Gem::Specification.new 'remote_files', RemoteFiles::VERSION do |gem|
   gem.files         = `git ls-files lib README.md`.split("\n")
 
   gem.add_dependency 'fog', '~> 1.15'
-
-  gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'minitest'
-  gem.add_development_dependency 'minitest-rg'
-  gem.add_development_dependency 'debugger' if RUBY_VERSION < '2.0'
-  gem.add_development_dependency 'mocha'
-  gem.add_development_dependency 'resque'
 end

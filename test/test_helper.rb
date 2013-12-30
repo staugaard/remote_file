@@ -1,10 +1,5 @@
 require 'bundler/setup'
 
-begin
-  require 'debugger'
-rescue LoadError
-end
-
 require 'minitest/autorun'
 require 'minitest/rg'
 require 'mocha/setup'
