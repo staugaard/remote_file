@@ -12,6 +12,7 @@ describe RemoteFiles::Configuration do
 
   describe '#logger' do
     it 'defaults to RemoteFiles.logger' do
+      @configuration.logger = nil
       logger = Logger.new($stdout)
       RemoteFiles.logger = logger
       configuration_logger = @configuration.logger
@@ -100,6 +101,7 @@ describe RemoteFiles::Configuration do
   describe '::store_once!' do
     before do
       @configuration.clear
+      @file.stored_in.replace([])
 
       @mock_store1 = @configuration.add_store(:mock1, :class => RemoteFiles::MockStore)
       @read_only_store = @configuration.add_store(:read_only_store, :class => RemoteFiles::MockStore, :read_only => true)
@@ -141,9 +143,6 @@ describe RemoteFiles::Configuration do
       before do
         @mock_store1.expects(:store!).with(@file).raises(RemoteFiles::Error)
         @mock_store2.expects(:store!).with(@file).raises(RemoteFiles::Error)
-
-        # should never try a readable store
-        @read_only_store.expects(:store!).never
       end
 
       it 'should raise a RemoteFiles::Error' do
