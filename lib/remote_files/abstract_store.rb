@@ -42,6 +42,10 @@ module RemoteFiles
       raise "You need to implement #{self.class.name}:#url_matcher"
     end
 
+    def read_only?
+      options.has_key?(:read_only) && (options[:read_only] == true)
+    end
+
     def file_from_url(url, options = {})
       matched = url_matcher.match(url)
 

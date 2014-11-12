@@ -50,6 +50,10 @@ module RemoteFiles
       @stored_in.map { |store_id| configuration.lookup_store(store_id) }
     end
 
+    def editable_stores
+      stores.reject(&:read_only?)
+    end
+
     def missing_stores
       configuration.stores - stores
     end
