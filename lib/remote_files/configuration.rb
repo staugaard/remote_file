@@ -71,10 +71,10 @@ module RemoteFiles
       !@stores.empty?
     end
 
-    def stores(only_editables = false)
+    def stores(editable_only = false)
       raise "You need to configure add stores to the #{name} RemoteFiles configuration" unless configured?
 
-      if only_editables
+      if editable_only
         @stores.reject {|s| s.read_only?}
       else
         @stores
