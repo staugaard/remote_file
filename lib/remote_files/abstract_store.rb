@@ -43,7 +43,7 @@ module RemoteFiles
     end
 
     def read_only?
-      options.has_key?(:read_only) && (options[:read_only] == true)
+      options[:read_only] == true
     end
 
     def file_from_url(url, options = {})

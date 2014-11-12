@@ -71,14 +71,18 @@ module RemoteFiles
       !@stores.empty?
     end
 
-    def stores(editable_only = false)
+    def stores
       raise "You need to configure add stores to the #{name} RemoteFiles configuration" unless configured?
 
-      if editable_only
-        @stores.reject {|s| s.read_only?}
-      else
-        @stores
-      end
+      @stores
+    end
+
+    def read_only_stores
+      stores.select {|s| s.read_only?}
+    end
+
+    def read_write_stores
+      stores.reject {|s| s.read_only?}
     end
 
     def lookup_store(store_identifier)
@@ -94,7 +98,7 @@ module RemoteFiles
 
       exception = nil
 
-      stores(true).each do |store|
+      read_write_stores.each do |store|
         begin
           stored = store.store!(file)
           file.stored_in << store.identifier
@@ -124,7 +128,8 @@ module RemoteFiles
 
     def delete_now!(file)
       exceptions = []
-      file.editable_stores.each do |store|
+      stores = file.read_write_stores
+      stores.each do |store|
         begin
           store.delete!(file.identifier)
         rescue NotFoundError => e
@@ -132,7 +137,7 @@ module RemoteFiles
         end
       end
 
-      if exceptions.size == file.editable_stores.size # they all failed
+      if exceptions.size == stores.size # they all failed
         raise exceptions.first
       end
 

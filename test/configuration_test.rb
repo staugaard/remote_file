@@ -47,7 +47,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::stores' do
+  describe '::read_write_stores' do
     before do
       @store1 = @configuration.add_store(:store1)
       @store2 = @configuration.add_store(:store2, :primary => true)
@@ -55,12 +55,21 @@ describe RemoteFiles::Configuration do
       @store3 = @configuration.add_store(:store3, :read_only => false)
     end
 
-    it 'should return all stores by default' do
-      @configuration.stores.must_equal([@store2, @mock_store1, @mock_store2, @store1, @read_only_store, @store3])
+    it 'should return only read write stores' do
+      @configuration.read_write_stores.must_equal([@store2, @mock_store1, @mock_store2, @store1, @store3])
+    end
+  end
+
+  describe '::read_only_stores' do
+    before do
+      @store1 = @configuration.add_store(:store1)
+      @store2 = @configuration.add_store(:store2, :primary => true)
+      @read_only_store = @configuration.add_store(:read_only_store, :read_only => true)
+      @store3 = @configuration.add_store(:store3, :read_only => false)
     end
 
-    it 'should return only editable stores when asked' do
-      @configuration.stores(true).must_equal([@store2, @mock_store1, @mock_store2, @store1, @store3])
+    it 'should return only read write stores' do
+      @configuration.read_only_stores.must_equal([@read_only_store])
     end
   end
 
