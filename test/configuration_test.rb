@@ -143,6 +143,8 @@ describe RemoteFiles::Configuration do
       before do
         @mock_store1.expects(:store!).with(@file).raises(RemoteFiles::Error)
         @mock_store2.expects(:store!).with(@file).raises(RemoteFiles::Error)
+        # should never try a readable store
+        @read_only_store.expects(:store!).never
       end
 
       it 'should raise a RemoteFiles::Error' do
