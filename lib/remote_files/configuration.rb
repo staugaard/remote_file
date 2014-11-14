@@ -54,7 +54,7 @@ module RemoteFiles
       store = (options[:class] || FogStore).new(store_identifier)
       block.call(store) if block_given?
 
-      store[:read_only] = options[:read_only]
+      store[:read_only] = options[:read_only] if options.key?(:read_only)
 
       if options[:primary]
         @stores.unshift(store)
