@@ -54,6 +54,8 @@ module RemoteFiles
       store = (options[:class] || FogStore).new(store_identifier)
       block.call(store) if block_given?
 
+      store[:read_only] = options[:read_only] if options.key?(:read_only)
+
       if options[:primary]
         @stores.unshift(store)
       else
@@ -69,7 +71,16 @@ module RemoteFiles
 
     def stores
       raise "You need to configure add stores to the #{name} RemoteFiles configuration" unless configured?
+
       @stores
+    end
+
+    def read_only_stores
+      stores.select {|s| s.read_only?}
+    end
+
+    def read_write_stores
+      stores.reject {|s| s.read_only?}
     end
 
     def lookup_store(store_identifier)
@@ -85,7 +96,7 @@ module RemoteFiles
 
       exception = nil
 
-      stores.each do |store|
+      read_write_stores.each do |store|
         begin
           stored = store.store!(file)
           file.stored_in << store.identifier
@@ -115,8 +126,8 @@ module RemoteFiles
 
     def delete_now!(file)
       exceptions = []
-      file.stored_in.each do |store_identifier|
-        store = lookup_store(store_identifier)
+      stores = file.read_write_stores
+      stores.each do |store|
         begin
           store.delete!(file.identifier)
         rescue NotFoundError => e
@@ -124,7 +135,7 @@ module RemoteFiles
         end
       end
 
-      if exceptions.size == file.stored_in.size # they all failed
+      if exceptions.size == stores.size # they all failed
         raise exceptions.first
       end
 
@@ -133,6 +144,8 @@ module RemoteFiles
 
     def synchronize!(file)
       file.missing_stores.each do |store|
+        next if store.read_only?
+
         store.store!(file)
         file.stored_in << store.identifier
       end
