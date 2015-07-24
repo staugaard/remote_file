@@ -2,14 +2,11 @@ require 'fog'
 
 module RemoteFiles
   class FogStore < AbstractStore
+    MULTIPART_MAX_PARTS = 10000
+    MULTIPART_MIN_SIZE = 5 * 1024 * 1024
+
     def store!(file)
-      success = directory.files.create(
-        :body         => file.content,
-        :content_type => file.content_type,
-        :key          => file.identifier,
-        :public       => options[:public],
-        :encryption   => options[:encryption]
-      )
+      success = directory.files.create(store_options(file))
 
       raise RemoteFiles::Error unless success
 
@@ -97,6 +94,30 @@ module RemoteFiles
       ).tap do |dir|
         dir.save
       end
+    end
+
+    def store_options(file)
+      store_options =
+        {
+          :body => file.content,
+          :content_type => file.content_type,
+          :key => file.identifier,
+          :public => options[:public],
+          :encryption => options[:encryption]
+        }
+      if file.options[:multipart_chunk_size]
+        raise RemoteFiles::Error.new("Only S3 supports the multipart_chunk_size option") unless options[:provider] == 'AWS'
+        chunk_size = file.options[:multipart_chunk_size]
+        store_options[:multipart_chunk_size] = chunk_size
+        raise RemoteFiles::Error.new("Minimum chunk size is #{MULTIPART_MIN_SIZE}") if chunk_size < MULTIPART_MIN_SIZE
+        if !file.content.respond_to?(:read) || !file.content.respond_to?(:size)
+          raise RemoteFiles::Error.new(':content must be a stream if chunking enabled')
+        end
+        if file.content.size / chunk_size > MULTIPART_MAX_PARTS
+          raise RemoteFiles::Error.new("Increase chunk size so that there are less then #{10000}{MULTIPART_MAX_PARTS} parts")
+        end
+      end
+      store_options
     end
   end
 end
