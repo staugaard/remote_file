@@ -61,6 +61,73 @@ describe RemoteFiles::FogStore do
       @store.directory.destroy
       proc { @store.store!(@file) }.must_raise(RemoteFiles::Error)
     end
+
+    it 'should validate multipart uploads meet minimum chunk size' do
+      file = RemoteFiles::File.new(
+        'identifier',
+        :content_type => 'text/plain',
+        :content => 'content',
+        :multipart_chunk_size => 1)
+      ex = assert_raises RemoteFiles::Error do
+        @store.store!(file)
+      end
+      ex.message.must_equal 'Minimum chunk size is 5242880'
+    end
+
+    it 'should validate multipart is used only with S3' do
+      @store[:provider] = 'Rackspace'
+      @store[:rackspace_api_key] = 'xx'
+      @store[:rackspace_username] = 'xxx'
+      @store[:rackspace_region] = 'ord'
+      @store.options.delete(:aws_secret_access_key)
+      @store.options.delete(:aws_access_key_id)
+
+      file = RemoteFiles::File.new(
+        'identifier',
+        :content_type => 'text/plain',
+        :content => 'content',
+        :multipart_chunk_size => 10_000_000)
+      ex = assert_raises RemoteFiles::Error do
+        @store.store!(file)
+      end
+      ex.message.must_equal 'Only S3 supports the multipart_chunk_size option'
+    end
+
+    it 'should validate multipart uploads are passed a stream' do
+      file = RemoteFiles::File.new(
+        'identifier',
+        :content_type => 'text/plain',
+        :content => 'content',
+        :multipart_chunk_size => 10_000_000)
+      ex = assert_raises RemoteFiles::Error do
+        @store.store!(file)
+      end
+      ex.message.must_equal ':content must be a stream if chunking enabled'
+    end
+
+    it 'should validate multipart uploads are passed an appropriate chunk size' do
+      content = StringIO.new('fake file')
+      content.stubs(:size => 10_000_000 * 10_001)
+      file = RemoteFiles::File.new(
+        'identifier',
+        :content_type => 'text/plain',
+        :content => content,
+        :multipart_chunk_size => 10_000_000)
+      ex = assert_raises RemoteFiles::Error do
+        @store.store!(file)
+      end
+      ex.message.must_equal 'Increase chunk size so that there are less then 10000{MULTIPART_MAX_PARTS} parts'
+    end
+
+    it 'should perform multipart uploads' do
+      content = StringIO.new('fake file')
+      file = RemoteFiles::File.new(
+        'identifier',
+        :content_type => 'text/plain',
+        :content => content,
+        :multipart_chunk_size => 10_000_000)
+      @store.store!(file)
+    end
   end
 
   describe '#retrieve!' do
