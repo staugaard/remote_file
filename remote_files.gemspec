@@ -10,5 +10,6 @@ Gem::Specification.new 'remote_files', RemoteFiles::VERSION do |gem|
 
   gem.files         = `git ls-files lib README.md`.split("\n")
 
-  gem.add_dependency 'fog-aws'
+  gem.add_dependency 'fog-aws', '>= 0.8.1'
+  gem.add_dependency 'mime-types'
 end
