@@ -1,6 +1,6 @@
 # RemoteFiles
 
-A library for uploading files to multiple remote storage backends like Amazon S3 and Rackspace CloudFiles.
+A library for uploading files to multiple remote storage backends like Amazon S3.
 
 The purpose of the library is to implement a simple interface for uploading files to multiple backends
 and to keep the backends in sync, so that your app will keep working when one backend is down.
@@ -31,15 +31,6 @@ RemoteFiles.add_store(:s3, :primary => true) do |s3|
   s3[:aws_secret_access_key] = AWS_SECRET_ACCESS_KEY
 
   s3[:directory] = 'my_s3_bucket'
-end
-
-RemoteFiles.add_store(:cf) do |cf|
-  cf[:provider] = 'Rackspace'
-
-  cf[:rackspace_username] = RACKSPACE_USERNAME
-  cf[:rackspace_api_key]  = RACKSPACE_API_KEY
-
-  cf[:directory] = 'my_cf_container'
 end
 ```
 
