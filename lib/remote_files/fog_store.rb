@@ -1,5 +1,3 @@
-require 'fog'
-
 module RemoteFiles
   class FogStore < AbstractStore
     MULTIPART_MAX_PARTS = 10000
@@ -33,8 +31,6 @@ module RemoteFiles
       case options[:provider]
       when 'AWS'
         "https://#{aws_host}/#{directory_name}/#{Fog::AWS.escape(identifier)}"
-      when 'Rackspace'
-        "https://storage.cloudfiles.com/#{directory_name}/#{Fog::Rackspace.escape(identifier, '/')}"
       else
         raise "#{self.class.name}#url was not implemented for the #{options[:provider]} provider"
       end
@@ -44,8 +40,6 @@ module RemoteFiles
       @url_matcher ||= case options[:provider]
       when 'AWS'
         /https?:\/\/s3[^\.]*.amazonaws.com\/#{directory_name}\/(.*)/
-      when 'Rackspace'
-        /https?:\/\/storage.cloudfiles.com\/#{directory_name}\/(.*)/
       else
         raise "#{self.class.name}#url_matcher was not implemented for the #{options[:provider]} provider"
       end

@@ -3,7 +3,7 @@ require 'bundler/setup'
 require 'minitest/autorun'
 require 'minitest/rg'
 require 'mocha/setup'
-require 'fog'
+require 'fog/aws'
 
 
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)

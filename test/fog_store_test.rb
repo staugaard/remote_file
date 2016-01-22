@@ -74,25 +74,6 @@ describe RemoteFiles::FogStore do
       ex.message.must_equal 'Minimum chunk size is 5242880'
     end
 
-    it 'should validate multipart is used only with S3' do
-      @store[:provider] = 'Rackspace'
-      @store[:rackspace_api_key] = 'xx'
-      @store[:rackspace_username] = 'xxx'
-      @store[:rackspace_region] = 'ord'
-      @store.options.delete(:aws_secret_access_key)
-      @store.options.delete(:aws_access_key_id)
-
-      file = RemoteFiles::File.new(
-        'identifier',
-        :content_type => 'text/plain',
-        :content => 'content',
-        :multipart_chunk_size => 10_000_000)
-      ex = assert_raises RemoteFiles::Error do
-        @store.store!(file)
-      end
-      ex.message.must_equal 'Only S3 supports the multipart_chunk_size option'
-    end
-
     it 'should validate multipart uploads are passed a stream' do
       file = RemoteFiles::File.new(
         'identifier',
@@ -172,14 +153,6 @@ describe RemoteFiles::FogStore do
       end
     end
 
-    describe 'for CloudFiles connections' do
-      before { @store[:provider] = 'Rackspace' }
-
-      it 'should return a CloudFiles url' do
-        @store.url('identifier').must_equal('https://storage.cloudfiles.com/directory/identifier')
-      end
-    end
-
     describe 'for other connections' do
       before { @store[:provider] = 'Google' }
 
@@ -199,25 +172,6 @@ describe RemoteFiles::FogStore do
         assert_equal 'key/on/cloud.txt', file.identifier
 
         file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/other_bucket/key/on/cloud.txt')
-        assert !file
-
-        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/cloud.txt')
-        assert !file
-      end
-    end
-
-    describe 'for a cloudfiles store' do
-      before { @store[:provider] = 'Rackspace' }
-
-      it 'should create a file if the container matches' do
-        file = @store.file_from_url('http://storage.cloudfiles.com/directory/key/on/cloud.txt')
-        assert file
-        assert_equal 'key/on/cloud.txt', file.identifier
-
-        file = @store.file_from_url('http://storage.cloudfiles.com/other_container/key/on/cloud.txt')
-        assert !file
-
-        file = @store.file_from_url('http://s3-eu-west-1.amazonaws.com/directory/key/on/cloud.txt')
         assert !file
       end
     end
