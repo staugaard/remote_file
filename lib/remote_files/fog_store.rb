@@ -1,3 +1,5 @@
+require 'fog/aws'
+
 module RemoteFiles
   class FogStore < AbstractStore
     MULTIPART_MAX_PARTS = 10000
