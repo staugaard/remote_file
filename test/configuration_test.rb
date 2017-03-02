@@ -30,7 +30,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::add_store' do
+  describe '#add_store' do
     describe 'when adding a non-primary store' do
       before { @non_primary_store = @configuration.add_store(:primary) }
 
@@ -48,7 +48,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::read_write_stores' do
+  describe '#read_write_stores' do
     before do
       @store1 = @configuration.add_store(:store1)
       @store2 = @configuration.add_store(:store2, :primary => true)
@@ -61,7 +61,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::read_only_stores' do
+  describe '#read_only_stores' do
     before do
       @store1 = @configuration.add_store(:store1)
       @store2 = @configuration.add_store(:store2, :primary => true)
@@ -74,7 +74,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::primary_store' do
+  describe '#primary_store' do
     before do
       @primary_store1 = @configuration.add_store(:primary1, :primary => true)
       @primary_store2 = @configuration.add_store(:primary2, :primary => true)
@@ -85,7 +85,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::lookup_store' do
+  describe '#lookup_store' do
     before do
       @primary_store = @configuration.add_store(:primary, :primary => true)
     end
@@ -98,7 +98,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::store_once!' do
+  describe '#store_once!' do
     before do
       @configuration.clear
       @file.stored_in.replace([])
@@ -153,7 +153,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::store!' do
+  describe '#store!' do
     describe 'when the file is already stored in some stores' do
       before { @file.stored_in.replace([@mock_store1.identifier]) }
 
@@ -198,10 +198,16 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::delete_now!' do
+  describe '#delete_now!' do
     before do
       @read_only_store = @configuration.add_store(:read_only_store, :class => RemoteFiles::MockStore, :read_only => true)
       @file.stored_in.replace([:mock1, :read_only_store, :mock2])
+    end
+
+    it 'raises when no stored are configured' do
+      @file.expects(:read_write_stores).returns([])
+      e = assert_raises(RuntimeError) { @configuration.delete_now!(@file) }
+      e.message.must_equal "No stores configured"
     end
 
     describe 'when the file is in all of stores' do
@@ -245,7 +251,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::delete!' do
+  describe '#delete!' do
     describe 'when no handler has been defined' do
       before do
         RemoteFiles.instance_variable_set(:@delete_file, nil)
@@ -270,7 +276,7 @@ describe RemoteFiles::Configuration do
     end
   end
 
-  describe '::synchronize!' do
+  describe '#synchronize!' do
     describe 'when the file is not stored anywhere' do
       before do
         @read_only_store = @configuration.add_store(:read_only_store, :read_only => true)
@@ -332,5 +338,4 @@ describe RemoteFiles::Configuration do
       file.must_be_nil
     end
   end
-
 end

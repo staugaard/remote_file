@@ -127,6 +127,9 @@ module RemoteFiles
     def delete_now!(file)
       exceptions = []
       stores = file.read_write_stores
+
+      raise "No stores configured" if stores.empty?
+
       stores.each do |store|
         begin
           store.delete!(file.identifier)
