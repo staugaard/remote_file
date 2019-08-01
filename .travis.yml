@@ -2,7 +2,11 @@ rvm:
   - 2.0
   - 2.1
   - 2.2
-  - jruby-9.0.0.0
+  - 2.3
+  - 2.4
+  - 2.5
+  - 2.6
+  - jruby
 sudo: false
 cache: bundler
 branches:
