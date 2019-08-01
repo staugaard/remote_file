@@ -48,6 +48,11 @@ module RemoteFiles
     end
 
     def delete!(identifier)
+      if identifier.to_s.chomp.empty?
+        message = "Empty identifier is not supported"
+        raise RemoteFiles::Error, message
+      end
+
       connection.delete_object(directory.key, identifier)
     rescue Fog::Errors::NotFound, Excon::Errors::NotFound
       raise NotFoundError, $!.message, $!.backtrace

@@ -199,6 +199,14 @@ describe RemoteFiles::FogStore do
       lambda { @store.delete!('unknown') }.must_raise(RemoteFiles::NotFoundError)
     end
 
+    it 'raises a RemoteFiles::Error if trying to delete with no identifier' do
+      @store.directory.key = 'directory'
+      ex = assert_raises RemoteFiles::Error do
+        @store.delete!("")
+      end
+      ex.message.must_equal "Empty identifier is not supported"
+    end
+
     it 'should destroy the file' do
       assert @store.directory.files.get('identifier')
 
