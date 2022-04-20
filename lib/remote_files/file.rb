@@ -1,9 +1,9 @@
 module RemoteFiles
   class File
-    attr_reader :content, :content_type, :identifier, :stored_in, :configuration
+    attr_reader :content, :content_type, :identifier, :stored_in, :configuration, :last_update_ts
 
     def initialize(identifier, options = {})
-      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content]
+      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content, :last_update_ts]
       known_keys.each do |key|
         options[key] ||= options.delete(key.to_s)
       end
@@ -11,6 +11,7 @@ module RemoteFiles
       @identifier    = identifier
       @stored_in     = (options[:stored_in] || []).map(&:to_sym)
       @content       = options.delete(:content)
+      @last_update_ts = options[:last_update_ts] || Time.now
       @content_type  = options[:content_type]
       @configuration = RemoteFiles::CONFIGURATIONS[(options[:configuration] || :default).to_sym]
       @logger        = options[:logger]
@@ -97,6 +98,10 @@ module RemoteFiles
 
     def synchronize!
       configuration.synchronize!(self)
+    end
+
+    def sync_latest_version!(stores_to_update = stores, stores_to_remove = [])
+      configuration.sync_latest_version!(self, stores_to_update, stores_to_remove)
     end
 
     def delete!

@@ -22,7 +22,7 @@ module RemoteFiles
 
     def store!(file)
       content = file.content.respond_to?(:read) ? file.content.read : file.content
-      data[file.identifier] = { :content => content, :content_type => file.content_type}
+      data[file.identifier] = { :content => content, :content_type => file.content_type, :last_update_ts => file.last_update_ts}
     end
 
     def retrieve!(identifier)
@@ -31,6 +31,7 @@ module RemoteFiles
       File.new(identifier,
         :content      => data[identifier][:content],
         :content_type => data[identifier][:content_type],
+        :last_update_ts => data[identifier][:last_update_ts],
         :stored_in    => [self]
       )
     end

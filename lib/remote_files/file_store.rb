@@ -31,11 +31,14 @@ module RemoteFiles
     end
 
     def retrieve!(identifier)
-      content = (directory + identifier).read
+      path = directory + identifier
+
+      content = (path).read
 
       RemoteFiles::File.new(identifier,
         :content      => content,
-        :stored_in    => [self]
+        :stored_in    => [self],
+        :last_update_ts => File.mtime(path)
         # what about content-type? maybe use the mime-types gem?
       )
     rescue Errno::ENOENT

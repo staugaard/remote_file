@@ -7,6 +7,7 @@ module RemoteFiles
 
     def store!(file)
       success = directory.files.create(store_options(file))
+      # TODO: Probably get the last modified time
 
       raise RemoteFiles::Error unless success
 
@@ -23,7 +24,8 @@ module RemoteFiles
       File.new(identifier,
         :content      => fog_file.body,
         :content_type => fog_file.content_type,
-        :stored_in    => [self]
+        :stored_in    => [self],
+        :last_update_ts => fog_file.last_modified
       )
     rescue Fog::Errors::Error, Excon::Errors::Error
       raise RemoteFiles::Error, $!.message, $!.backtrace

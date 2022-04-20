@@ -5,7 +5,7 @@ require 'remote_files/mock_store'
 describe RemoteFiles::Configuration do
   before do
     @configuration = RemoteFiles.configure(:test)
-    @file = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain')
+    @file = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain', :last_update_ts => Time.utc(1970, 4, 22))
     @mock_store1 = @configuration.add_store(:mock1, :class => RemoteFiles::MockStore)
     @mock_store2 = @configuration.add_store(:mock2, :class => RemoteFiles::MockStore, :read_only => false)
   end
@@ -39,7 +39,7 @@ describe RemoteFiles::Configuration do
       end
     end
 
-    describe 'when adding a promary store' do
+    describe 'when adding a primary store' do
       before { @primary_store = @configuration.add_store(:primary, :primary => true) }
 
       it 'should add it to the head of the list of stores' do
@@ -114,7 +114,7 @@ describe RemoteFiles::Configuration do
       end
 
       it 'should only store the file in the first store' do
-        @mock_store1.data['file'].must_equal(:content => 'content', :content_type => 'text/plain')
+        @mock_store1.data['file'].must_equal(:content => 'content', :content_type => 'text/plain', :last_update_ts => @file.last_update_ts)
         @mock_store2.data['file'].must_be_nil
       end
     end
@@ -131,7 +131,7 @@ describe RemoteFiles::Configuration do
         @read_only_store.expects(:store!).never
 
         @mock_store1.data['file'].must_be_nil
-        @mock_store2.data['file'].must_equal(:content => 'content', :content_type => 'text/plain')
+        @mock_store2.data['file'].must_equal(:content => 'content', :content_type => 'text/plain', :last_update_ts => @file.last_update_ts)
       end
 
       it 'logs that the first store failed' do
@@ -313,6 +313,77 @@ describe RemoteFiles::Configuration do
         @configuration.synchronize!(@file)
       end
     end
+  end
+
+  describe '#latest_stored_version' do
+    describe 'when no stores are registered' do
+      it 'should return nil' do
+        @configuration.latest_stored_version(@file).must_be_nil
+      end
+    end
+
+    describe 'when the file is stored in multiple places with multiple timestamps' do
+      before do
+        @other_copy = RemoteFiles::File.new(@file.identifier, :configuration => :test, :content => 'more content', :content_type => 'text/plain', :last_update_ts => @file.last_update_ts + 10)
+
+        @file.stored_in.replace([@mock_store1.identifier])
+        @other_copy.stored_in.replace([@mock_store2.identifier])
+
+        @mock_store1.store! @file
+        @mock_store2.store! @other_copy
+      end
+
+      describe 'when provided the latest version' do
+        it 'should return that latest version' do
+          @configuration.latest_stored_version(@other_copy).content.must_equal(@other_copy.content)
+        end
+      end
+
+      describe 'when provided an older version' do
+        it 'should return the latest version' do
+          @configuration.latest_stored_version(@file).content.must_equal(@other_copy.content)
+        end
+      end
+    end
+
+    describe 'when the file is stored in multiple places with the same timestamps' do
+      before do
+        @other_copy = RemoteFiles::File.new(@file.identifier, :configuration => :test, :content => 'more content', :content_type => 'text/plain', :last_update_ts => @file.last_update_ts)
+
+        @file.stored_in.replace([@mock_store1.identifier])
+        @other_copy.stored_in.replace([@mock_store2.identifier])
+
+        @mock_store1.store! @file
+        @mock_store2.store! @other_copy
+      end
+
+      # TODO: Is this expectation adequate? Or should it do a checksum comparison or something?
+      describe 'when provided the primary version' do
+        it 'should return the version on the primary' do
+          @configuration.latest_stored_version(@file).content.must_equal(@file.content)
+        end
+      end
+
+      describe 'when provided the non-primary version' do
+        it 'should return the primary version' do
+          @configuration.latest_stored_version(@other_copy).content.must_equal(@file.content)
+        end
+      end
+    end
+
+    describe 'when the file is stored in one place' do
+      before do
+        @configuration.store_once!(@file)
+      end
+
+      it 'should return the version on the primary' do
+        @configuration.latest_stored_version(@file).content.must_equal(@file.content)
+      end
+    end
+  end
+
+  describe '#synchronize_version!' do
+    # TODO
   end
 
   describe '#file_from_url' do
