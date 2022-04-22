@@ -9,7 +9,7 @@ module RemoteFiles
       end
 
       @identifier    = identifier
-      @stored_in     = (options[:stored_in] || []).map(&:to_sym)
+      @stored_in     = (options[:stored_in] || []).map(&:to_sym) # TODO: Refactor so that there are two classes: `File` and `FileCopy`
       @content       = options.delete(:content)
       @last_update_ts = options[:last_update_ts] || Time.now
       @content_type  = options[:content_type]
