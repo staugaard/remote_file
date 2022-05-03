@@ -1,9 +1,9 @@
 module RemoteFiles
   class File
-    attr_reader :content, :content_type, :identifier, :stored_in, :configuration
+    attr_reader :content, :content_type, :identifier, :stored_in, :configuration, :populate_stored_in
 
     def initialize(identifier, options = {})
-      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content]
+      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content, :populate_stored_in]
       known_keys.each do |key|
         options[key] ||= options.delete(key.to_s)
       end
@@ -14,6 +14,7 @@ module RemoteFiles
       @content_type  = options[:content_type]
       @configuration = RemoteFiles::CONFIGURATIONS[(options[:configuration] || :default).to_sym]
       @logger        = options[:logger]
+      @populate_stored_in = options[:populate_stored_in]
       @options       = options
     end
 
@@ -34,7 +35,8 @@ module RemoteFiles
         :identifier    => identifier,
         :stored_in     => stored_in,
         :content_type  => content_type,
-        :configuration => configuration.name
+        :configuration => configuration.name,
+        :populate_stored_in => populate_stored_in
       )
     end
 
@@ -79,6 +81,8 @@ module RemoteFiles
           next unless file
           @content      = file.content
           @content_type = file.content_type
+          # :populate_stored_in is a boolean
+          @stored_in = file.stored_in if @populate_stored_in
           return true
         rescue Error => e
         end
