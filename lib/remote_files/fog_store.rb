@@ -72,6 +72,10 @@ module RemoteFiles
       options[:directory]
     end
 
+    def files
+      @directory.files
+    end
+
     def directory
       @directory ||= lookup_directory || create_directory
     end

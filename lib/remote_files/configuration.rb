@@ -154,33 +154,6 @@ module RemoteFiles
       end
     end
 
-    def latest_stored_version(file)
-
-      stores.reduce(nil) do |most_recent_copy, store|
-
-      copy = begin
-        store.retrieve!(file.identifier)
-      rescue RemoteFiles::NotFoundError
-        nil
-      end
-
-        if most_recent_copy.nil? || (copy != nil && copy.last_update_ts > most_recent_copy.last_update_ts)
-          copy
-        else
-          most_recent_copy
-        end
-      end
-    end
-
-    def synchronize_version!(file, stores_to_update = stores, stores_to_remote = [])
-      # TODO: Implement
-      nil
-    end
-
-    def sync_latest_version!(file, stores_to_update = stores, stores_to_remove = [])
-      synchronize_version!(latest_stored_version(file), stores_to_update, stores_to_remove)
-    end
-
     def file_from_url(url, options = {})
       stores.each do |store|
         file = store.file_from_url(url, options.merge(:configuration => name))
