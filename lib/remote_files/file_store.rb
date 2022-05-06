@@ -13,6 +13,17 @@ module RemoteFiles
       end
     end
 
+    def files
+      @directory.children.reject do |child|
+        child.directory?
+      end.map do |child|
+        File.new(child.basename,
+                 :stored_in => [self],
+                 :last_update_ts => child.mtime
+        )
+      end
+    end
+
     def store!(file)
       file_name = directory + file.identifier
 
@@ -38,7 +49,7 @@ module RemoteFiles
       RemoteFiles::File.new(identifier,
         :content      => content,
         :stored_in    => [self],
-        :last_update_ts => File.mtime(path)
+        :last_update_ts => path.mtime
         # what about content-type? maybe use the mime-types gem?
       )
     rescue Errno::ENOENT

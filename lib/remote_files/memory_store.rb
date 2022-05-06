@@ -36,6 +36,16 @@ module RemoteFiles
       )
     end
 
+    def files
+      @data.map do |identifier, data|
+        File.new(identifier,
+                 :content_type => data[:content_type],
+                 :last_update_ts => data[:last_update_ts],
+                 :stored_in => [self]
+        )
+      end
+    end
+
     def directory_name
       self.identifier.to_s
     end

@@ -15,7 +15,7 @@ describe RemoteFiles::MemoryStore do
       it 'should store the file in the memory' do
         @store.store!(@file)
 
-        assert_equal({:content_type => 'text/plain', :content => 'content'}, @store.data['identifier'])
+        assert_equal({:content_type => 'text/plain', :content => 'content', :last_update_ts => @file.last_update_ts}, @store.data['identifier'])
       end
     end
 

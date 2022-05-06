@@ -21,7 +21,8 @@ describe RemoteFiles::ResqueJob do
         :stored_in     => [:s3],
         :foo           => :bar,
         :configuration => :default,
-        :_action       => :synchronize
+        :_action       => :synchronize,
+        :last_update_ts => nil
       )
 
       RemoteFiles.synchronize_stores(@file)
@@ -34,7 +35,8 @@ describe RemoteFiles::ResqueJob do
         :stored_in     => [:s3],
         :foo           => :bar,
         :configuration => :default,
-        :_action       => :delete
+        :_action       => :delete,
+        :last_update_ts => nil
       )
 
       RemoteFiles.delete_file(@file)
