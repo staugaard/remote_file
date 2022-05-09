@@ -14,10 +14,10 @@ module RemoteFiles
     end
 
     def files
-      @directory.children.reject do |child|
+      directory.children.reject do |child|
         child.directory?
       end.map do |child|
-        File.new(child.basename,
+        File.new(child.basename.to_s,
                  :stored_in => [self],
                  :last_update_ts => child.mtime
         )
