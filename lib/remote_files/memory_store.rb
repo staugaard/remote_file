@@ -41,7 +41,8 @@ module RemoteFiles
         File.new(identifier,
                  :content_type => data[:content_type],
                  :last_update_ts => data[:last_update_ts],
-                 :stored_in => [self]
+                 :stored_in => [self],
+                 :content => data[:content]
         )
       end
     end

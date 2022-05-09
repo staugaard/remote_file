@@ -75,6 +75,7 @@ module RemoteFiles
     def files
       @directory.files.all.map do |file|
         File.New(file.identity,
+                 :content      => file.body,
                  :content_type => file.content_type,
                  :stored_in => [self],
                  :last_update_ts => file.last_modified
