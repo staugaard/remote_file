@@ -73,8 +73,8 @@ module RemoteFiles
     end
 
     def files
-      @directory.files.all.map do |file|
-        File.New(file.identity,
+      directory.files.all.map do |file|
+        File.new(file.identity,
                  :content      => file.body,
                  :content_type => file.content_type,
                  :stored_in => [self],
