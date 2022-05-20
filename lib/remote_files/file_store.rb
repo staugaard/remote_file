@@ -18,7 +18,6 @@ module RemoteFiles
         child.directory?
       end.map do |child|
         File.new(child.basename.to_s,
-                 :content => child.read,
                  :stored_in => [self],
                  :last_update_ts => child.mtime
         )

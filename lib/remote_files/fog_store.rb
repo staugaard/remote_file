@@ -72,15 +72,21 @@ module RemoteFiles
       options[:directory]
     end
 
+    # TODO: Add file bodies if we thing it's worth it
     def files
-      directory.files.all.map do |file|
-        File.new(file.identity,
-                 :content      => file.body,
+      full_list = []
+
+      directory.files.each do |file|
+        full_list.append(
+          File.new(file.identity,
                  :content_type => file.content_type,
                  :stored_in => [self],
                  :last_update_ts => file.last_modified
+          )
         )
       end
+
+      full_list
     end
 
     def directory
