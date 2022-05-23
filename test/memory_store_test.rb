@@ -101,4 +101,27 @@ describe RemoteFiles::MemoryStore do
     end
   end
 
+  describe '#files' do
+    describe 'when no prefix is provided' do
+      before do
+        @store.data['identifier'] = {:content_type => 'text/plain', :content => 'content'}
+      end
+
+      it 'should return all files in store' do
+        @store.files.length.must_equal 1
+      end
+    end
+
+    describe 'when a prefix is provided' do
+      before do
+        @store.data['identifier'] = {:content_type => 'text/plain', :content => 'content'}
+        @store.data['test/a'] = {:content_type => 'text/plain', :content => 'a'}
+        @store.data['test/b'] = {:content_type => 'text/plain', :content => 'b'}
+      end
+
+      it 'should return only relevant files' do
+        @store.files('test').length.must_equal 2
+      end
+    end
+  end
 end

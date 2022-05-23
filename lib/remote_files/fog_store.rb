@@ -73,10 +73,10 @@ module RemoteFiles
     end
 
     # TODO: Add file bodies if we thing it's worth it
-    def files
+    def files(prefix = '')
       full_list = []
 
-      directory.files.each do |file|
+      directory.files.all(:prefix => prefix).each do |file|
         full_list.append(
           File.new(file.identity,
                  :content_type => file.content_type,

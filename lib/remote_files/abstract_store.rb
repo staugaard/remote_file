@@ -22,7 +22,7 @@ module RemoteFiles
       raise "You need to implement #{self.class.name}:#directory_name"
     end
 
-    def files
+    def files(prefix = '')
       raise "You need to implement #{self.class.name} #files"
     end
 

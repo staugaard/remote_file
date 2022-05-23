@@ -1,7 +1,7 @@
 require 'pathname'
 require 'fileutils'
 
-# This is good for use in deveopment
+# This is good for use in development
 
 module RemoteFiles
   class FileStore < AbstractStore
@@ -13,8 +13,8 @@ module RemoteFiles
       end
     end
 
-    def files
-      directory.children.reject do |child|
+    def files(prefix = '')
+      (directory + prefix).children.reject do |child|
         child.directory?
       end.map do |child|
         File.new(child.basename.to_s,
