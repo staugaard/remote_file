@@ -72,7 +72,7 @@ module RemoteFiles
       options[:directory]
     end
 
-    # TODO: Add file bodies if we thing it's worth it
+    # TODO: Add file bodies if we think it's worth it
     def files(prefix = '')
       full_list = []
 

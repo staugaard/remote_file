@@ -14,7 +14,11 @@ module RemoteFiles
     end
 
     def files(prefix = '')
-      (directory + prefix).children.reject do |child|
+      dir = directory + prefix
+
+      return [] unless dir.exist?
+
+      dir.children.reject do |child|
         child.directory?
       end.map do |child|
         File.new(child.basename.to_s,
