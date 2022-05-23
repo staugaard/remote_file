@@ -104,10 +104,6 @@ module RemoteFiles
       configuration.synchronize!(self)
     end
 
-    def sync_latest_version!(stores_to_update = stores, stores_to_remove = [])
-      configuration.sync_latest_version!(self, stores_to_update, stores_to_remove)
-    end
-
     def delete!
       configuration.delete!(self)
     end
