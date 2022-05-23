@@ -77,7 +77,7 @@ module RemoteFiles
       full_list = []
 
       directory.files.all(:prefix => prefix).each do |file|
-        full_list.append(
+        full_list.push(
           File.new(file.identity,
                  :content_type => file.content_type,
                  :stored_in => [self],
