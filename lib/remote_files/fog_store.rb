@@ -17,7 +17,7 @@ module RemoteFiles
     end
 
     def copy_to_store!(file, target_store)
-      connection.copy_object(directory_name, file.identifier, target_store.directory_name, file.identifier)
+      target_store.connection.copy_object(directory_name, file.identifier, target_store.directory_name, file.identifier)
     end
 
     def retrieve!(identifier)
