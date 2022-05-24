@@ -45,6 +45,10 @@ module RemoteFiles
       end
     end
 
+    def copy_to_store!(file, target_store)
+      FileUtils.cp(directory + file.identifier, target_store.directory + file.identifier)
+    end
+
     def retrieve!(identifier)
       path = directory + identifier
 

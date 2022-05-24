@@ -240,4 +240,35 @@ describe RemoteFiles::FogStore do
       end
     end
   end
+  
+  describe '#copy_to_store!' do
+    before do
+      @other_store = RemoteFiles::FogStore.new(:other)
+      @other_store[:provider] = 'AWS'
+      @other_store[:aws_access_key_id]     = 'access_key_id'
+      @other_store[:aws_secret_access_key] = 'secret_access_key'
+      @other_store[:directory] = 'directory'
+      @other_store[:public]    = true
+    end
+
+    describe 'when a file belongs to another store' do
+      before do
+        @other_store.directory.files.create(
+          :body         => 'content',
+          :content_type => 'text/plain',
+          :key          => 'identifier'
+        )
+        @file = @other_store.retrieve! 'identifier'
+      end
+
+      it 'should show up in the new store' do
+        # TODO: make this test fail when `copy_to_store!` is not called
+
+        @other_store.copy_to_store!(@file, @store)
+        moved_file = @store.retrieve!(@file.identifier)
+        moved_file.identifier.must_equal @file.identifier
+        moved_file.stored_in.must_include @store.identifier
+      end
+    end
+  end
 end
