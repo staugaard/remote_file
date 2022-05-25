@@ -25,6 +25,10 @@ module RemoteFiles
       data[file.identifier] = { :content => content, :content_type => file.content_type, :last_update_ts => file.last_update_ts}
     end
 
+    def copy_to_store!(file, target_store)
+      target_store.data[file.identifier] = data[file.identifier]
+    end
+
     def retrieve!(identifier)
       raise NotFoundError, "#{identifier} not found in #{self.identifier} store" unless data.has_key?(identifier)
 

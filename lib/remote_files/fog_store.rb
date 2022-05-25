@@ -16,6 +16,10 @@ module RemoteFiles
       raise RemoteFiles::Error, $!.message, $!.backtrace
     end
 
+    def copy_to_store!(file, target_store)
+      target_store.connection.copy_object(directory_name, file.identifier, target_store.directory_name, file.identifier)
+    end
+
     def retrieve!(identifier)
       fog_file = directory.files.get(identifier)
 
