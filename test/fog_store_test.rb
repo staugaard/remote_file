@@ -247,7 +247,7 @@ describe RemoteFiles::FogStore do
       @other_store[:provider] = 'AWS'
       @other_store[:aws_access_key_id]     = 'access_key_id'
       @other_store[:aws_secret_access_key] = 'secret_access_key'
-      @other_store[:directory] = 'directory'
+      @other_store[:directory] = 'other_directory'
       @other_store[:public]    = true
     end
 
@@ -258,12 +258,14 @@ describe RemoteFiles::FogStore do
           :content_type => 'text/plain',
           :key          => 'identifier'
         )
+
+        # Ensures that the destination directory exists
+        @store.directory
+
         @file = @other_store.retrieve! 'identifier'
       end
 
       it 'should show up in the new store' do
-        # TODO: make this test fail when `copy_to_store!` is not called
-
         @other_store.copy_to_store!(@file, @store)
         moved_file = @store.retrieve!(@file.identifier)
         moved_file.identifier.must_equal @file.identifier
