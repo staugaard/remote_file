@@ -5,7 +5,7 @@ require 'remote_files/mock_store'
 describe RemoteFiles::Configuration do
   before do
     @configuration = RemoteFiles.configure(:test)
-    @file = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain')
+    @file = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain', :last_update_ts => Time.utc(1970, 4, 22))
     @mock_store1 = @configuration.add_store(:mock1, :class => RemoteFiles::MockStore)
     @mock_store2 = @configuration.add_store(:mock2, :class => RemoteFiles::MockStore, :read_only => false)
   end
@@ -39,7 +39,7 @@ describe RemoteFiles::Configuration do
       end
     end
 
-    describe 'when adding a promary store' do
+    describe 'when adding a primary store' do
       before { @primary_store = @configuration.add_store(:primary, :primary => true) }
 
       it 'should add it to the head of the list of stores' do
@@ -114,7 +114,7 @@ describe RemoteFiles::Configuration do
       end
 
       it 'should only store the file in the first store' do
-        @mock_store1.data['file'].must_equal(:content => 'content', :content_type => 'text/plain')
+        @mock_store1.data['file'].must_equal(:content => 'content', :content_type => 'text/plain', :last_update_ts => @file.last_update_ts)
         @mock_store2.data['file'].must_be_nil
       end
     end
@@ -131,7 +131,7 @@ describe RemoteFiles::Configuration do
         @read_only_store.expects(:store!).never
 
         @mock_store1.data['file'].must_be_nil
-        @mock_store2.data['file'].must_equal(:content => 'content', :content_type => 'text/plain')
+        @mock_store2.data['file'].must_equal(:content => 'content', :content_type => 'text/plain', :last_update_ts => @file.last_update_ts)
       end
 
       it 'logs that the first store failed' do

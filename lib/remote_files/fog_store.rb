@@ -7,12 +7,17 @@ module RemoteFiles
 
     def store!(file)
       success = directory.files.create(store_options(file))
+      # TODO: Probably get the last modified time
 
       raise RemoteFiles::Error unless success
 
       true
     rescue Fog::Errors::Error, Excon::Errors::Error
       raise RemoteFiles::Error, $!.message, $!.backtrace
+    end
+
+    def copy_to_store!(file, target_store)
+      target_store.connection.copy_object(directory_name, file.identifier, target_store.directory_name, file.identifier)
     end
 
     def retrieve!(identifier)
@@ -23,7 +28,8 @@ module RemoteFiles
       File.new(identifier,
         :content      => fog_file.body,
         :content_type => fog_file.content_type,
-        :stored_in    => [self]
+        :stored_in    => [self],
+        :last_update_ts => fog_file.last_modified
       )
     rescue Fog::Errors::Error, Excon::Errors::Error
       raise RemoteFiles::Error, $!.message, $!.backtrace
@@ -68,6 +74,23 @@ module RemoteFiles
 
     def directory_name
       options[:directory]
+    end
+
+    # TODO: Add file bodies if we think it's worth it
+    def files(prefix = '')
+      full_list = []
+
+      directory.files.all(:prefix => prefix).each do |file|
+        full_list.push(
+          File.new(file.identity,
+                 :content_type => file.content_type,
+                 :stored_in => [self],
+                 :last_update_ts => file.last_modified
+          )
+        )
+      end
+
+      full_list
     end
 
     def directory

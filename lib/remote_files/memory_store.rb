@@ -22,7 +22,11 @@ module RemoteFiles
 
     def store!(file)
       content = file.content.respond_to?(:read) ? file.content.read : file.content
-      data[file.identifier] = { :content => content, :content_type => file.content_type}
+      data[file.identifier] = { :content => content, :content_type => file.content_type, :last_update_ts => file.last_update_ts}
+    end
+
+    def copy_to_store!(file, target_store)
+      target_store.data[file.identifier] = data[file.identifier]
     end
 
     def retrieve!(identifier)
@@ -31,8 +35,21 @@ module RemoteFiles
       File.new(identifier,
         :content      => data[identifier][:content],
         :content_type => data[identifier][:content_type],
+        :last_update_ts => data[identifier][:last_update_ts],
         :stored_in    => [self]
       )
+    end
+
+    def files(prefix = '')
+      @data.reject do |identifier|
+        !identifier.start_with? prefix
+      end.map do |identifier, data|
+        File.new(identifier,
+                 :content_type => data[:content_type],
+                 :last_update_ts => data[:last_update_ts],
+                 :stored_in => [self]
+        )
+      end
     end
 
     def directory_name

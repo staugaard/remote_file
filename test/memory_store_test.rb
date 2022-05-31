@@ -15,7 +15,7 @@ describe RemoteFiles::MemoryStore do
       it 'should store the file in the memory' do
         @store.store!(@file)
 
-        assert_equal({:content_type => 'text/plain', :content => 'content'}, @store.data['identifier'])
+        assert_equal({:content_type => 'text/plain', :content => 'content', :last_update_ts => @file.last_update_ts}, @store.data['identifier'])
       end
     end
 
@@ -101,4 +101,47 @@ describe RemoteFiles::MemoryStore do
     end
   end
 
+  describe '#files' do
+    describe 'when no prefix is provided' do
+      before do
+        @store.data['identifier'] = {:content_type => 'text/plain', :content => 'content'}
+      end
+
+      it 'should return all files in store' do
+        @store.files.length.must_equal 1
+      end
+    end
+
+    describe 'when a prefix is provided' do
+      before do
+        @store.data['identifier'] = {:content_type => 'text/plain', :content => 'content'}
+        @store.data['test/a'] = {:content_type => 'text/plain', :content => 'a'}
+        @store.data['test/b'] = {:content_type => 'text/plain', :content => 'b'}
+      end
+
+      it 'should return only relevant files' do
+        @store.files('test').length.must_equal 2
+      end
+    end
+  end
+
+  describe '#copy_to_store!' do
+    before do
+      @other_store = RemoteFiles::MemoryStore.new(:mem_other)
+    end
+
+    describe 'when a file belongs to another store' do
+      before do
+        @other_store.data['identifier'] = {:content_type => 'text/plain', :content => 'content'}
+        @file = @other_store.retrieve! 'identifier'
+      end
+
+      it 'should show up in the new store' do
+        @other_store.copy_to_store!(@file, @store)
+        moved_file = @store.retrieve!(@file.identifier)
+        moved_file.identifier.must_equal @file.identifier
+        moved_file.stored_in.must_include @store.identifier
+      end
+    end
+  end
 end

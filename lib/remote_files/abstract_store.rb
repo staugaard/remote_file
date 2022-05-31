@@ -22,6 +22,14 @@ module RemoteFiles
       raise "You need to implement #{self.class.name}:#directory_name"
     end
 
+    def files(prefix = '')
+      raise "You need to implement #{self.class.name} #files"
+    end
+
+    def copy_to_store!(file, target_store)
+      raise "You need to implement #{self.class.name} #copy_to_store!"
+    end
+
     def store!(file)
       raise "You need to implement #{self.class.name}#store!"
     end

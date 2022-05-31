@@ -22,7 +22,8 @@ describe RemoteFiles::ResqueJob do
         :foo           => :bar,
         :configuration => :default,
         :populate_stored_in => nil,
-        :_action       => :synchronize
+        :_action       => :synchronize,
+        :last_update_ts => nil
       )
 
       RemoteFiles.synchronize_stores(@file)
@@ -36,7 +37,8 @@ describe RemoteFiles::ResqueJob do
         :foo           => :bar,
         :configuration => :default,
         :populate_stored_in => nil,
-        :_action       => :delete
+        :_action       => :delete,
+        :last_update_ts => nil
       )
 
       RemoteFiles.delete_file(@file)
@@ -96,7 +98,8 @@ describe RemoteFiles::ResqueJob do
         :foo           => :bar,
         :configuration => :default,
         :populate_stored_in => true,
-        :_action       => :synchronize
+        :_action       => :synchronize,
+        :last_update_ts => nil
       )
 
       RemoteFiles.synchronize_stores(@file)
@@ -110,7 +113,8 @@ describe RemoteFiles::ResqueJob do
         :foo           => :bar,
         :configuration => :default,
         :populate_stored_in => true,
-        :_action       => :delete
+        :_action       => :delete,
+        :last_update_ts => nil
       )
 
       RemoteFiles.delete_file(@file)

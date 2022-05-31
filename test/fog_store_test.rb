@@ -217,4 +217,60 @@ describe RemoteFiles::FogStore do
     end
   end
 
+  describe '#files' do
+    describe 'when no prefix is provided' do
+      before do
+        @store.store! RemoteFiles::File.new('identifier', :content_type => 'text/plain', :content => 'content')
+      end
+
+      it 'should return all files in store' do
+        @store.files.length.must_equal 1
+      end
+    end
+
+    describe 'when a prefix is provided' do
+      before do
+        @store.store! RemoteFiles::File.new('identifier', :content_type => 'text/plain', :content => 'content')
+        @store.store! RemoteFiles::File.new('test/a', :content_type => 'text/plain', :content => 'a')
+        @store.store! RemoteFiles::File.new('test/b', :content_type => 'text/plain', :content => 'b')
+      end
+
+      it 'should return only relevant files' do
+        @store.files('test').length.must_equal 2
+      end
+    end
+  end
+  
+  describe '#copy_to_store!' do
+    before do
+      @other_store = RemoteFiles::FogStore.new(:other)
+      @other_store[:provider] = 'AWS'
+      @other_store[:aws_access_key_id]     = 'access_key_id'
+      @other_store[:aws_secret_access_key] = 'secret_access_key'
+      @other_store[:directory] = 'other_directory'
+      @other_store[:public]    = true
+    end
+
+    describe 'when a file belongs to another store' do
+      before do
+        @other_store.directory.files.create(
+          :body         => 'content',
+          :content_type => 'text/plain',
+          :key          => 'identifier'
+        )
+
+        # Ensures that the destination directory exists
+        @store.directory
+
+        @file = @other_store.retrieve! 'identifier'
+      end
+
+      it 'should show up in the new store' do
+        @other_store.copy_to_store!(@file, @store)
+        moved_file = @store.retrieve!(@file.identifier)
+        moved_file.identifier.must_equal @file.identifier
+        moved_file.stored_in.must_include @store.identifier
+      end
+    end
+  end
 end

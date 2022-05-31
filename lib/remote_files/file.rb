@@ -1,16 +1,17 @@
 module RemoteFiles
   class File
-    attr_reader :content, :content_type, :identifier, :stored_in, :configuration, :populate_stored_in
+    attr_reader :content, :content_type, :identifier, :stored_in, :configuration, :populate_stored_in, :last_update_ts
 
     def initialize(identifier, options = {})
-      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content, :populate_stored_in]
+      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content, :populate_stored_in, :last_update_ts]
       known_keys.each do |key|
         options[key] ||= options.delete(key.to_s)
       end
 
       @identifier    = identifier
-      @stored_in     = (options[:stored_in] || []).map(&:to_sym)
+      @stored_in     = (options[:stored_in] || []).map(&:to_sym) # TODO: Refactor so that there are two classes: `File` and `FileCopy`
       @content       = options.delete(:content)
+      @last_update_ts = options[:last_update_ts] || Time.now
       @content_type  = options[:content_type]
       @configuration = RemoteFiles::CONFIGURATIONS[(options[:configuration] || :default).to_sym]
       @logger        = options[:logger]

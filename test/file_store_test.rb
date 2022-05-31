@@ -111,4 +111,52 @@ describe RemoteFiles::FileStore do
     end
   end
 
+  describe '#files' do
+    describe 'when no prefix is provided' do
+      before do
+        @store.store! RemoteFiles::File.new('identifier', :content_type => 'text/plain', :content => 'content')
+      end
+
+      it 'should return all files in store' do
+        @store.files.length.must_equal 1
+      end
+    end
+
+    describe 'when a prefix is provided' do
+      before do
+        @store.store! RemoteFiles::File.new('identifier', :content_type => 'text/plain', :content => 'content')
+        @store.store! RemoteFiles::File.new('test/a', :content_type => 'text/plain', :content => 'a')
+        @store.store! RemoteFiles::File.new('test/b', :content_type => 'text/plain', :content => 'b')
+      end
+
+      it 'should return only relevant files' do
+        @store.files('test').length.must_equal 2
+      end
+    end
+  end
+
+  describe '#copy_to_store!' do
+    before do
+      @other_store = RemoteFiles::FileStore.new(:file_other)
+      @other_store[:directory] = Pathname.new(File.dirname(__FILE__)) + '../other_tmp'
+    end
+
+    describe 'when a file belongs to another store' do
+      before do
+        @file = RemoteFiles::File.new('other_id', :content_type => 'text/plain', :content => 'content')
+        @other_store.store! @file
+      end
+
+      it 'should show up in the new store' do
+        @other_store.copy_to_store!(@file, @store)
+        moved_file = @store.retrieve!(@file.identifier)
+        moved_file.identifier.must_equal @file.identifier
+        moved_file.stored_in.must_include @store.identifier
+      end
+
+      after do
+        @store.delete! @file.identifier
+      end
+    end
+  end
 end

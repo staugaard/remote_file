@@ -1,7 +1,7 @@
 require 'pathname'
 require 'fileutils'
 
-# This is good for use in deveopment
+# This is good for use in development
 
 module RemoteFiles
   class FileStore < AbstractStore
@@ -10,6 +10,21 @@ module RemoteFiles
       @directory ||= Pathname.new(options[:directory]).tap do |dir|
         dir.mkdir unless dir.exist?
         raise "#{dir} is not a directory" unless dir.directory?
+      end
+    end
+
+    def files(prefix = '')
+      dir = directory + prefix
+
+      return [] unless dir.exist?
+
+      dir.children.reject do |child|
+        child.directory?
+      end.map do |child|
+        File.new(child.basename.to_s,
+                 :stored_in => [self],
+                 :last_update_ts => child.mtime
+        )
       end
     end
 
@@ -30,12 +45,19 @@ module RemoteFiles
       end
     end
 
+    def copy_to_store!(file, target_store)
+      FileUtils.cp(directory + file.identifier, target_store.directory + file.identifier)
+    end
+
     def retrieve!(identifier)
-      content = (directory + identifier).read
+      path = directory + identifier
+
+      content = (path).read
 
       RemoteFiles::File.new(identifier,
         :content      => content,
-        :stored_in    => [self]
+        :stored_in    => [self],
+        :last_update_ts => path.mtime
         # what about content-type? maybe use the mime-types gem?
       )
     rescue Errno::ENOENT
