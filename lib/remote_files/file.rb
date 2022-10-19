@@ -1,6 +1,6 @@
 module RemoteFiles
   class File
-    attr_reader :content, :content_type, :identifier, :stored_in, :configuration, :populate_stored_in, :last_update_ts
+    attr_reader :content, :content_type, :identifier, :stored_in, :configuration, :populate_stored_in, :last_update_ts, :errors
 
     def initialize(identifier, options = {})
       known_keys = [:identifier, :stored_in, :content_type, :configuration, :content, :populate_stored_in, :last_update_ts, :errors]
