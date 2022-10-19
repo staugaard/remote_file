@@ -3,7 +3,7 @@ module RemoteFiles
     attr_reader :content, :content_type, :identifier, :stored_in, :configuration, :populate_stored_in, :last_update_ts
 
     def initialize(identifier, options = {})
-      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content, :populate_stored_in, :last_update_ts]
+      known_keys = [:identifier, :stored_in, :content_type, :configuration, :content, :populate_stored_in, :last_update_ts, :errors]
       known_keys.each do |key|
         options[key] ||= options.delete(key.to_s)
       end
@@ -16,6 +16,7 @@ module RemoteFiles
       @configuration = RemoteFiles::CONFIGURATIONS[(options[:configuration] || :default).to_sym]
       @logger        = options[:logger]
       @populate_stored_in = options[:populate_stored_in]
+      @errors        = options[:errors]
       @options       = options
     end
 
@@ -86,6 +87,7 @@ module RemoteFiles
           @stored_in = file.stored_in if @populate_stored_in
           return true
         rescue Error => e
+          @errors.push(e)
         end
       end
 
