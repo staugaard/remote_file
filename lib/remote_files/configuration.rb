@@ -103,6 +103,7 @@ module RemoteFiles
           break
         rescue ::RemoteFiles::Error => e
           file.logger.info(e) if file.logger
+          file.errors.push(e) if file.errors
           exception = e
         end
       end

@@ -87,7 +87,6 @@ module RemoteFiles
           @stored_in = file.stored_in if @populate_stored_in
           return true
         rescue Error => e
-          @errors.push(e)
         end
       end
 
