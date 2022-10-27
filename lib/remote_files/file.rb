@@ -16,7 +16,7 @@ module RemoteFiles
       @configuration = RemoteFiles::CONFIGURATIONS[(options[:configuration] || :default).to_sym]
       @logger        = options[:logger]
       @populate_stored_in = options[:populate_stored_in]
-      @errors        = options[:errors]
+      @errors        = options[:errors] || []
       @options       = options
     end
 
