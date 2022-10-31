@@ -118,7 +118,7 @@ describe RemoteFiles::Configuration do
         @mock_store2.data['file'].must_be_nil
       end
 
-      it 'should not adds the errors into the file' do
+      it 'should not add any errors into the file' do
         @file.errors.length.must_equal 0
       end
     end
@@ -143,9 +143,7 @@ describe RemoteFiles::Configuration do
       end
 
       it 'adds the errors into the file'  do
-        io = StringIO.new
-        io.puts @file.errors[0]
-        io.string.must_match /RemoteFiles::Error/
+        @file.errors[0].to_s.must_match /RemoteFiles::Error/
       end
     end
 
@@ -157,9 +155,7 @@ describe RemoteFiles::Configuration do
       end
 
       it 'adds the errors into the file' do
-        io = StringIO.new
-        io.puts @file2.errors[0]
-        io.string.must_match /RemoteFiles::Error/
+        @file2.errors[0].to_s.must_match /RemoteFiles::Error/
       end
     end
 
