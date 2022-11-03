@@ -154,8 +154,8 @@ describe RemoteFiles::Configuration do
         @configuration.store_once!(@file2)
       end
 
-      it 'adds the errors into the file' do
-        @file2.errors[0].to_s.must_match /RemoteFiles::Error/
+      it 'errors array returns nil' do
+        assert_nil @file2.errors
       end
     end
 
