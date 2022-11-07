@@ -139,11 +139,11 @@ describe RemoteFiles::Configuration do
       end
 
       it 'logs that the first store failed' do
-        @log.string.must_match /RemoteFiles::Error/
+        @log.string.must_match(/RemoteFiles::Error/)
       end
 
       it 'adds the errors into the file'  do
-        @file.errors[0].to_s.must_match /RemoteFiles::Error/
+        @file.errors[0].to_s.must_match(/RemoteFiles::Error/)
       end
     end
 
