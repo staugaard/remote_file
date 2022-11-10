@@ -100,6 +100,7 @@ module RemoteFiles
         begin
           stored = store.store!(file)
           file.stored_in << store.identifier
+          raise ::RemoteFiles::Error.new('testing remote files error')
           break
         rescue ::RemoteFiles::Error => e
           file.logger.info(e) if file.logger
