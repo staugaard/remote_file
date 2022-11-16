@@ -5,7 +5,7 @@ require 'remote_files/mock_store'
 describe RemoteFiles::Configuration do
   before do
     @configuration = RemoteFiles.configure(:test)
-    @file = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain', :last_update_ts => Time.utc(1970, 4, 22))
+    @file = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain', :last_update_ts => Time.utc(1970, 4, 22), :errors => [])
     @mock_store1 = @configuration.add_store(:mock1, :class => RemoteFiles::MockStore)
     @mock_store2 = @configuration.add_store(:mock2, :class => RemoteFiles::MockStore, :read_only => false)
   end
@@ -117,6 +117,10 @@ describe RemoteFiles::Configuration do
         @mock_store1.data['file'].must_equal(:content => 'content', :content_type => 'text/plain', :last_update_ts => @file.last_update_ts)
         @mock_store2.data['file'].must_be_nil
       end
+
+      it 'should not add any errors into the file' do
+        @file.errors.length.must_equal 0
+      end
     end
 
     describe 'when the first store fails' do
@@ -135,7 +139,23 @@ describe RemoteFiles::Configuration do
       end
 
       it 'logs that the first store failed' do
-        @log.string.must_match /RemoteFiles::Error/
+        @log.string.must_match(/RemoteFiles::Error/)
+      end
+
+      it 'adds the errors into the file'  do
+        @file.errors[0].to_s.must_match(/RemoteFiles::Error/)
+      end
+    end
+
+    describe 'when configured without an errors array' do
+      before do
+        @file2 = RemoteFiles::File.new('file', :configuration => :test, :content => 'content', :content_type => 'text/plain', :last_update_ts => Time.utc(1970, 4, 22))
+        @mock_store1.expects(:store!).with(@file2).raises(RemoteFiles::Error)
+        @configuration.store_once!(@file2)
+      end
+
+      it 'errors array returns nil' do
+        assert_nil @file2.errors
       end
     end
 
